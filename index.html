@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Masters Pool 2026</title>
+<title>2026 Masters Pool</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
@@ -296,8 +296,8 @@ input:focus, select:focus { outline: none; border-color: var(--masters-green); }
 <body>
 
 <header>
-  <h1>The Masters Pool</h1>
-  <div class="subtitle">Augusta National &middot; 2026</div>
+  <h1>2026 Masters Pool</h1>
+  <div class="subtitle">Augusta National</div>
   <div class="room-badge" id="room-badge" style="display:none">
     Room: <span id="room-code-display"></span>
   </div>
@@ -994,18 +994,19 @@ function selectPlayer(name) {
 
 function confirmPick() {
   if (!pendingPlayer) return;
+  const player = pendingPlayer;
   closeModal();
 
   const snake = getSnakeOrder();
   const curr = snake[state.currentPick];
 
   if (!state.picks[curr.team]) state.picks[curr.team] = [];
-  state.picks[curr.team].push(pendingPlayer);
+  state.picks[curr.team].push(player);
   if (!state.drafted) state.drafted = [];
-  state.drafted.push(pendingPlayer);
+  state.drafted.push(player);
   state.currentPick++;
 
-  showToast(`${curr.team} selects ${pendingPlayer}`);
+  showToast(`${curr.team} selects ${player}`);
 
   const isDone = state.currentPick >= state.totalPicks;
   if (isDone) state.draftComplete = true;
