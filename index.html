@@ -574,8 +574,8 @@ window.showCreate = function() {
     config: { picksPerTeam: 5, scoringType: 'all', cutRule: 'freeze', numTeams: 3 },
     teams: [],
     draftOrder: [],
-    picks: { _placeholder: true },
-    drafted: { _placeholder: true },
+    picks: {},
+    drafted: {},
     currentPick: 0,
     draftComplete: false,
     players: { [myName]: { online: true, joined: Date.now() } }
@@ -656,8 +656,11 @@ function listenToRoom() {
     room.totalPicks = room.teams.length * room.picksPerTeam;
 
     // Clean up placeholders
-    delete room.picks._placeholder;
-    room.drafted = room.drafted.filter(x => x !== true);
+    // Clean any non-string values from picks and drafted
+    for (const team of Object.keys(room.picks)) {
+      room.picks[team] = (room.picks[team] || []).filter(v => typeof v === 'string');
+    }
+    room.drafted = (room.drafted || []).filter(v => typeof v === 'string');
 
     // Route to correct phase
     if (!isCommissioner && room.phase === 'setup') {
@@ -739,9 +742,6 @@ window.startDraft = function() {
   const teams = getTeamNames();
   if (room.draftOrder.length === 0) { showToast('Randomize draft order first'); return; }
 
-  const picks = {};
-  teams.forEach(t => { picks[t] = { _empty: true }; });
-
   roomUpdate({
     phase: 'draft',
     teams: teams,
@@ -749,8 +749,8 @@ window.startDraft = function() {
     'config/picksPerTeam': parseInt(document.getElementById('picks-per-team').value),
     'config/scoringType': document.getElementById('scoring-type').value,
     'config/cutRule': document.getElementById('cut-rule').value,
-    picks: picks,
-    drafted: { _empty: true },
+    picks: null,
+    drafted: null,
     currentPick: 0,
     draftComplete: false
   });
