@@ -298,6 +298,7 @@ input:focus, select:focus { outline: none; border-color: var(--masters-green); }
 <header>
   <h1>2026 Masters Pool</h1>
   <div class="subtitle"></div>
+  <div id="sync-status" style="display:none; font-size:0.75rem; padding:4px 10px; background:#fff3cd; color:#856404; text-align:center;"></div>
   <div class="room-badge" id="room-badge" style="display:none">
     Room: <span id="room-code-display"></span>
   </div>
@@ -782,11 +783,16 @@ function listenToRoom() {
   // Real-time listener
   const unsub = roomRef.on('value', snap => {
     try {
-      if (!snap.exists()) return;
+      if (!snap.exists()) { updateSyncStatus('Room not found in Firebase', 'red'); return; }
+      updateSyncStatus('Live update received ' + new Date().toLocaleTimeString(), 'green');
       applyRoomData(snap.val());
     } catch (err) {
       console.error('Listener error:', err);
+      updateSyncStatus('Listener error: ' + err.message, 'red');
     }
+  }, err => {
+    console.error('Firebase listener failed:', err);
+    updateSyncStatus('Listener FAILED: ' + err.message, 'red');
   });
   unsubscribers.push(() => roomRef.off('value', unsub));
 
@@ -797,15 +803,28 @@ function listenToRoom() {
     roomRef.once('value').then(snap => {
       if (!snap.exists()) return;
       try { applyRoomData(snap.val()); } catch (e) { console.error('Poll error:', e); }
-    }).catch(() => {});
+    }).catch(err => {
+      updateSyncStatus('Poll failed: ' + err.message, 'red');
+    });
   }, 3000);
 }
 
+function updateSyncStatus(msg, color) {
+  const el = document.getElementById('sync-status');
+  el.style.display = 'block';
+  el.style.background = color === 'green' ? '#d4edda' : color === 'red' ? '#f8d7da' : '#fff3cd';
+  el.style.color = color === 'green' ? '#155724' : color === 'red' ? '#721c24' : '#856404';
+  el.textContent = msg;
+}
+
 function syncToFirebase(updates) {
-  if (!roomRef) return;
-  roomRef.update(updates).catch(err => {
+  if (!roomRef) { updateSyncStatus('No room ref — not connected', 'red'); return; }
+  updateSyncStatus('Syncing...', 'yellow');
+  roomRef.update(updates).then(() => {
+    updateSyncStatus('Synced ' + new Date().toLocaleTimeString(), 'green');
+  }).catch(err => {
     console.error('Firebase sync failed:', err);
-    showToast('Sync error — check your connection');
+    updateSyncStatus('Sync FAILED: ' + err.message, 'red');
   });
 }
 
