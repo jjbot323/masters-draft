@@ -31,6 +31,43 @@ header {
 }
 header h1 { font-size: 2.2rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
 header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.05rem; letter-spacing: 1px; }
+
+/* Hero landing */
+.landing-hero {
+  position: relative;
+  min-height: 70vh;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    linear-gradient(to bottom, rgba(0,51,35,0.55) 0%, rgba(0,51,35,0.3) 40%, rgba(0,51,35,0.6) 100%),
+    url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1400&q=80') center center / cover no-repeat;
+  margin: -20px -16px 20px -16px;
+  border-radius: 0 0 20px 20px;
+  overflow: hidden;
+}
+.landing-hero-inner {
+  text-align: center; padding: 40px 20px; max-width: 460px; width: 100%; z-index: 1;
+}
+.landing-hero h2 {
+  font-size: 2.4rem; color: white; text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  letter-spacing: 2px; margin-bottom: 6px;
+}
+.landing-hero .tagline {
+  color: var(--masters-gold); font-style: italic; font-size: 1.1rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.5); margin-bottom: 32px; letter-spacing: 1px;
+}
+.landing-hero .landing-btn {
+  background: rgba(255,255,255,0.95); border: 2px solid rgba(255,255,255,0.3);
+  backdrop-filter: blur(8px); box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.landing-hero .landing-btn:hover {
+  background: white; border-color: var(--masters-gold);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.3); transform: translateY(-2px);
+}
+.landing-hero .landing-btn .icon { font-size: 1.6rem; width: 40px; }
+.landing-hero .landing-btn .label { font-size: 1.05rem; }
+.landing-hero #join-form .card {
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+}
 .room-badge {
   position: absolute; top: 12px; right: 16px;
   background: rgba(255,255,255,0.15); border: 1px solid var(--masters-gold);
@@ -238,33 +275,37 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
 
   <!-- LANDING -->
   <div class="phase active" id="phase-landing">
-    <div class="landing">
+    <div class="landing-hero">
+      <div class="landing-hero-inner">
+        <h2>2026 Masters Pool</h2>
+        <div class="tagline">A Tradition Unlike Any Other</div>
 
-      <div id="landing-buttons">
-        <button class="landing-btn" onclick="showCreate()">
-          <div class="icon">+</div>
-          <div><div class="label">Create New Draft</div></div>
-        </button>
-        <button class="landing-btn" onclick="showJoin()">
-          <div class="icon">&#x1F517;</div>
-          <div><div class="label">Join Draft or Pool</div></div>
-        </button>
-      </div>
+        <div id="landing-buttons">
+          <button class="landing-btn" onclick="showCreate()">
+            <div class="icon">+</div>
+            <div><div class="label">Create New Draft</div></div>
+          </button>
+          <button class="landing-btn" onclick="showJoin()">
+            <div class="icon">&#x1F517;</div>
+            <div><div class="label">Join Draft or Pool</div></div>
+          </button>
+        </div>
 
-      <div id="join-form">
-        <div class="card">
-          <h2>Join a Room</h2>
-          <div class="form-row">
-            <label>Room Code</label>
-            <input type="text" id="join-code" maxlength="4" placeholder="ABCD" style="text-transform:uppercase; letter-spacing:4px; text-align:center; font-size:1.3rem;">
-          </div>
-          <div class="form-row">
-            <label>Your Name</label>
-            <input type="text" id="join-name" placeholder="Enter your name">
-          </div>
-          <div class="btn-group">
-            <button class="btn btn-primary" onclick="joinRoom()">Join</button>
-            <button class="btn btn-outline" onclick="hideJoin()">Cancel</button>
+        <div id="join-form">
+          <div class="card">
+            <h2>Join a Room</h2>
+            <div class="form-row">
+              <label>Room Code</label>
+              <input type="text" id="join-code" maxlength="4" placeholder="ABCD" style="text-transform:uppercase; letter-spacing:4px; text-align:center; font-size:1.3rem;">
+            </div>
+            <div class="form-row">
+              <label>Your Name</label>
+              <input type="text" id="join-name" placeholder="Enter your name">
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="joinRoom()">Join</button>
+              <button class="btn btn-outline" onclick="hideJoin()">Cancel</button>
+            </div>
           </div>
         </div>
       </div>
