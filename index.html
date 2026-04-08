@@ -970,8 +970,7 @@ function renderDraftBoard() {
 
   for (let r = 0; r < state.picksPerTeam; r++) {
     html += `<tr><td class="round-label">Rd ${r + 1}</td>`;
-    const roundOrder = r % 2 === 0 ? [...state.draftOrder] : [...state.draftOrder].reverse();
-    roundOrder.forEach(team => {
+    state.draftOrder.forEach(team => {
       const pickIdx = snake.findIndex((s, i) => s.round === r + 1 && s.team === team);
       const isCurrent = pickIdx === state.currentPick;
       const player = state.picks[team] ? state.picks[team][r] : null;
