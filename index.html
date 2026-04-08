@@ -786,7 +786,10 @@ function listenToRoom() {
 
 function syncToFirebase(updates) {
   if (!roomRef) return;
-  roomRef.update(updates);
+  roomRef.update(updates).catch(err => {
+    console.error('Firebase sync failed:', err);
+    showToast('Sync error — check your connection');
+  });
 }
 
 function showRoomBadge() {
@@ -994,7 +997,10 @@ function renderPlayerGrid() {
     (state.currentPick < snake.length && snake[state.currentPick].team === state.myName);
   const isDraftDone = state.currentPick >= (state.totalPicks || snake.length);
 
-  if (isDraftDone || (!isMyTurn && state.mode !== 'local')) return;
+  if (isDraftDone || (!isMyTurn && state.mode !== 'local')) {
+    grid.innerHTML = '';
+    return;
+  }
 
   grid.innerHTML = MASTERS_FIELD
     .filter(p => p.name.toLowerCase().includes(search))
@@ -1042,6 +1048,9 @@ function confirmPick() {
   const isDone = state.currentPick >= state.totalPicks;
   if (isDone) state.draftComplete = true;
 
+  // Always render locally for immediate feedback
+  renderDraft();
+
   if (state.mode !== 'local') {
     const updates = {
       picks: state.picks,
@@ -1052,17 +1061,14 @@ function confirmPick() {
     if (isDone) updates.phase = 'scores';
     syncToFirebase(updates);
   } else {
-    if (isDone) {
-      saveLocal();
-      renderDraft();
-      setTimeout(() => {
-        showToast('Draft Complete!');
-        setTimeout(() => { switchPhase('scores'); renderScores(); }, 1500);
-      }, 500);
-    } else {
-      saveLocal();
-      renderDraft();
-    }
+    saveLocal();
+  }
+
+  if (isDone) {
+    setTimeout(() => {
+      showToast('Draft Complete!');
+      setTimeout(() => { switchPhase('scores'); renderScores(); }, 1500);
+    }, 500);
   }
   pendingPlayer = null;
 }
