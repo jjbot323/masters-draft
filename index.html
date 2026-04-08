@@ -239,19 +239,15 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
   <!-- LANDING -->
   <div class="phase active" id="phase-landing">
     <div class="landing">
-      <h2>Welcome to the Pool</h2>
-      <p>Draft golfers with your crew and track live scores all tournament long.</p>
 
       <div id="landing-buttons">
         <button class="landing-btn" onclick="showCreate()">
           <div class="icon">+</div>
-          <div><div class="label">Create New Draft</div>
-          <div class="desc">Start a new pool and invite friends</div></div>
+          <div><div class="label">Create New Draft</div></div>
         </button>
         <button class="landing-btn" onclick="showJoin()">
           <div class="icon">&#x1F517;</div>
-          <div><div class="label">Join Draft</div>
-          <div class="desc">Enter a room code to join</div></div>
+          <div><div class="label">Join Draft or Pool</div></div>
         </button>
       </div>
 
@@ -378,14 +374,17 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
 
   <!-- SCORES -->
   <div class="phase" id="phase-scores">
-    <div class="card">
-      <h2>Team Leaderboard</h2>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <span id="tournament-status" style="font-size:0.9rem; color:var(--text-light);"></span>
-        <span id="last-update" style="font-size:0.8rem; color:var(--text-light);"></span>
+    <div class="card" style="padding:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin-bottom:0; border:none; padding:0;">Team Leaderboard</h2>
+        <div>
+          <span id="tournament-status" style="font-size:0.85rem; color:var(--text-light);"></span>
+          &nbsp;
+          <span id="last-update" style="font-size:0.75rem; color:var(--text-light);"></span>
+        </div>
       </div>
-      <table class="scores-table" id="team-leaderboard"></table>
     </div>
+    <div id="team-leaderboard"></div>
     <div class="card">
       <h2>Full Leaderboard</h2>
       <div style="overflow-x:auto;">
@@ -983,11 +982,13 @@ async function fetchScores() {
     (comp.competitors || []).forEach(c => {
       const name = c.athlete?.displayName || '';
       const toPar = c.statistics?.[0]?.displayValue || 'E';
+      const rounds = (c.linescores || []).map(ls => ls.displayValue || '--');
       scoreData[name] = {
         name, toPar: parseToPar(toPar), toParDisplay: toPar,
         position: c.status?.position?.displayName || '--',
         thru: c.status?.thru || c.status?.type?.shortDetail || '--',
-        today: c.linescores?.length ? c.linescores[c.linescores.length - 1].displayValue : '--',
+        today: rounds.length ? rounds[rounds.length - 1] : '--',
+        rounds: rounds,
         status: c.status?.type?.description === 'cut' ? 'cut' : 'active'
       };
     });
@@ -1011,10 +1012,18 @@ function usePlaceholderScores() {
   scoreData = {};
   MASTERS_FIELD.forEach(p => {
     const toPar = Math.floor(Math.random() * 25) - 8;
+    const r1 = Math.floor(Math.random() * 10) + 66;
+    const r2 = Math.floor(Math.random() * 10) + 66;
+    const r3 = Math.random() > 0.3 ? Math.floor(Math.random() * 10) + 66 : null;
+    const r4 = r3 && Math.random() > 0.4 ? Math.floor(Math.random() * 10) + 66 : null;
+    const rounds = [String(r1), String(r2)];
+    if (r3) rounds.push(String(r3));
+    if (r4) rounds.push(String(r4));
     scoreData[p.name] = {
       name: p.name, toPar,
       toParDisplay: toPar === 0 ? 'E' : (toPar > 0 ? '+' + toPar : '' + toPar),
-      position: '--', thru: 'F', today: '--',
+      position: '--', thru: 'F', today: rounds[rounds.length - 1],
+      rounds: rounds,
       status: Math.random() > 0.85 ? 'cut' : 'active'
     };
   });
@@ -1071,29 +1080,57 @@ function renderScores() {
   });
   teamScores.sort((a, b) => a.totalToPar - b.totalToPar);
 
-  let html = `<thead><tr><th>Pos</th><th>Team</th><th>Total</th><th>Players</th></tr></thead><tbody>`;
+  // Determine max rounds played across all players
+  const maxRounds = Math.max(1, ...Object.values(scoreData).map(p => (p.rounds || []).length));
+  const roundHeaders = [];
+  for (let r = 1; r <= maxRounds; r++) roundHeaders.push(`R${r}`);
+
+  let html = '';
   teamScores.forEach((ts, i) => {
     const sc = ts.totalToPar < 0 ? 'under' : (ts.totalToPar > 0 ? 'over' : 'even');
-    html += `<tr class="team-row" onclick="window.toggleTeamDetail('detail-${i}')">
-      <td>${i + 1}</td><td><strong>${ts.team}</strong></td>
-      <td><span class="score ${sc}">${ts.totalDisplay}</span></td>
-      <td>${ts.counting.map(p => p.name.split(' ').pop()).join(', ')}</td>
-    </tr><tr class="team-detail" id="detail-${i}"><td colspan="4">`;
+    html += `<div class="card team-score-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; cursor:pointer;" onclick="window.toggleTeamCard('team-card-${i}')">
+        <div>
+          <span style="font-size:1.1rem; font-weight:bold; color:var(--masters-green);">${i + 1}. ${ts.team}</span>
+        </div>
+        <div>
+          <span class="score ${sc}" style="font-size:1.3rem;">${ts.totalDisplay}</span>
+        </div>
+      </div>
+      <div id="team-card-${i}">
+      <div style="overflow-x:auto;">
+      <table class="scores-table" style="font-size:0.85rem;">
+        <thead><tr>
+          <th style="text-align:left;">Player</th>
+          ${roundHeaders.map(r => `<th style="text-align:center; min-width:42px;">${r}</th>`).join('')}
+          <th style="text-align:center;">Total</th>
+          <th style="text-align:center;">Thru</th>
+          <th style="text-align:center;">Status</th>
+        </tr></thead><tbody>`;
     ts.players.forEach(p => {
       const isCounting = ts.counting.includes(p);
       const psc = p.toPar < 0 ? 'under' : (p.toPar > 0 ? 'over' : 'even');
       const stCls = p.status === 'cut' ? 'status-cut' : 'status-active';
-      const adjLabel = p.cutAdjusted ? ' (adj)' : '';
-      html += `<div class="team-player-row" style="${!isCounting ? 'opacity:0.5' : ''}">
-        <span>${p.name}${!isCounting ? ' (bench)' : ''}${adjLabel}</span>
-        <span><span class="score ${psc}">${p.toParDisplay}</span>
-        &nbsp;<span style="color:var(--text-light)">Thru ${p.thru}</span>
-        &nbsp;<span class="status-badge ${stCls}">${p.status}</span></span>
-      </div>`;
+      const adjLabel = p.cutAdjusted ? ' *' : '';
+      const rowStyle = !isCounting ? 'opacity:0.45;' : '';
+      const rounds = p.rounds || [];
+      html += `<tr style="${rowStyle}">
+        <td style="text-align:left; white-space:nowrap;">${p.name.split(' ').pop()}${!isCounting ? ' <span style="font-size:0.7rem; color:var(--text-light);">(bench)</span>' : ''}${adjLabel}</td>
+        ${roundHeaders.map((_, ri) => `<td style="text-align:center;">${rounds[ri] || '--'}</td>`).join('')}
+        <td style="text-align:center;"><span class="score ${psc}">${p.toParDisplay}</span></td>
+        <td style="text-align:center; color:var(--text-light);">${p.thru}</td>
+        <td style="text-align:center;"><span class="status-badge ${stCls}">${p.status}</span></td>
+      </tr>`;
     });
-    html += '</td></tr>';
+    // Team total row
+    html += `<tr style="border-top:2px solid var(--masters-green); font-weight:bold;">
+      <td style="text-align:left;">Team Total</td>
+      ${roundHeaders.map(() => '<td></td>').join('')}
+      <td style="text-align:center;"><span class="score ${sc}">${ts.totalDisplay}</span></td>
+      <td></td><td></td>
+    </tr>`;
+    html += '</tbody></table></div></div></div>';
   });
-  html += '</tbody>';
   document.getElementById('team-leaderboard').innerHTML = html;
 
   // Full leaderboard
@@ -1112,6 +1149,11 @@ function renderScores() {
 
 window.toggleTeamDetail = function(id) {
   document.getElementById(id).classList.toggle('open');
+};
+
+window.toggleTeamCard = function(id) {
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
 };
 
 let scoreInterval = null;
