@@ -344,12 +344,6 @@ input:focus, select:focus { outline: none; border-color: var(--masters-green); }
         </div>
       </div>
       <div class="card" style="margin-top:16px">
-        <p style="font-size:0.9rem; color:var(--text-light);">
-          <strong>Local test mode:</strong> No server needed. Try the full draft on this device.
-        </p>
-        <div class="btn-group" style="justify-content:center">
-          <button class="btn btn-sm btn-outline" onclick="startLocal()">Test Locally</button>
-        </div>
       </div>
     </div>
   </div>
@@ -398,6 +392,13 @@ input:focus, select:focus { outline: none; border-color: var(--masters-green); }
           <option value="all">All Golfers Count</option>
           <option value="best4">Best 4 of Team</option>
           <option value="best3">Best 3 of Team</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Missed Cut Rule</label>
+        <select id="cut-rule">
+          <option value="freeze" selected>Freeze at cut score (or worst active teammate if higher)</option>
+          <option value="raw">Keep raw score (no adjustment)</option>
         </select>
       </div>
       <div class="btn-group">
@@ -544,6 +545,7 @@ let state = {
   draftOrder: [],
   picksPerTeam: 5,
   scoringType: 'all',
+  cutRule: 'freeze',
   currentPick: 0,
   totalPicks: 0,
   picks: {},           // { teamName: [playerName, ...] }
@@ -554,6 +556,25 @@ let state = {
 };
 
 const STORAGE_KEY = 'masters_draft_2026';
+
+// ========================================
+// FIREBASE DATA HELPERS
+// ========================================
+function toArray(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  if (typeof val === 'object') return Object.values(val);
+  return [];
+}
+
+function toPicksMap(val) {
+  if (!val) return {};
+  const result = {};
+  for (const [team, picks] of Object.entries(val)) {
+    result[team] = toArray(picks);
+  }
+  return result;
+}
 
 // ========================================
 // MASTERS FIELD
@@ -682,6 +703,10 @@ function createFirebaseRoom() {
     document.getElementById('share-link-box').style.display = 'block';
     document.getElementById('share-room-code').textContent = state.roomCode;
     listenToRoom();
+  }).catch(err => {
+    console.error('Firebase write failed:', err);
+    showToast('Online mode unavailable — starting locally instead.');
+    startLocal();
   });
 }
 
@@ -707,6 +732,10 @@ function joinRoom() {
     roomRef.child('players/' + name).set({ online: true, joined: Date.now() });
     showRoomBadge();
     listenToRoom();
+  }).catch(err => {
+    console.error('Firebase join failed:', err);
+    showToast('Could not connect to room. Check your connection.');
+    state.mode = null;
   });
 }
 
@@ -717,13 +746,14 @@ function listenToRoom() {
     if (!snap.exists()) return;
     const data = snap.val();
 
-    state.teams = data.teams || [];
-    state.draftOrder = data.draftOrder || [];
+    state.teams = toArray(data.teams);
+    state.draftOrder = toArray(data.draftOrder);
     state.picksPerTeam = data.config?.picksPerTeam || 5;
     state.scoringType = data.config?.scoringType || 'all';
+    state.cutRule = data.config?.cutRule || 'freeze';
     state.currentPick = data.currentPick || 0;
-    state.picks = data.picks || {};
-    state.drafted = data.drafted || [];
+    state.picks = toPicksMap(data.picks);
+    state.drafted = toArray(data.drafted);
     state.draftComplete = data.draftComplete || false;
     state.players = data.players || {};
     state.totalPicks = state.teams.length * state.picksPerTeam;
@@ -857,6 +887,7 @@ function startDraft() {
   state.teams = getTeamNames();
   state.picksPerTeam = parseInt(document.getElementById('picks-per-team').value);
   state.scoringType = document.getElementById('scoring-type').value;
+  state.cutRule = document.getElementById('cut-rule').value;
   state.currentPick = 0;
   state.totalPicks = state.teams.length * state.picksPerTeam;
   state.picks = {};
@@ -871,6 +902,7 @@ function startDraft() {
       draftOrder: state.draftOrder,
       'config/picksPerTeam': state.picksPerTeam,
       'config/scoringType': state.scoringType,
+      'config/cutRule': state.cutRule,
       picks: state.picks,
       drafted: state.drafted,
       currentPick: 0,
@@ -1000,9 +1032,9 @@ function confirmPick() {
   const snake = getSnakeOrder();
   const curr = snake[state.currentPick];
 
-  if (!state.picks[curr.team]) state.picks[curr.team] = [];
+  if (!Array.isArray(state.picks[curr.team])) state.picks[curr.team] = toArray(state.picks[curr.team]);
   state.picks[curr.team].push(player);
-  if (!state.drafted) state.drafted = [];
+  if (!Array.isArray(state.drafted)) state.drafted = toArray(state.drafted);
   state.drafted.push(player);
   state.currentPick++;
 
@@ -1142,6 +1174,22 @@ function renderScores() {
 
   const teamScores = state.draftOrder.map(team => {
     const players = (state.picks[team] || []).map(name => ({ ...findPlayerScore(name), name }));
+
+    // Apply missed cut rule
+    if (state.cutRule === 'freeze') {
+      const activePlayers = players.filter(p => p.status !== 'cut');
+      const worstActive = activePlayers.length > 0
+        ? Math.max(...activePlayers.map(p => p.toPar))
+        : null;
+      players.forEach(p => {
+        if (p.status === 'cut' && worstActive !== null && worstActive > p.toPar) {
+          p.toPar = worstActive;
+          p.toParDisplay = worstActive === 0 ? 'E' : (worstActive > 0 ? '+' + worstActive : '' + worstActive);
+          p.cutAdjusted = true;
+        }
+      });
+    }
+
     players.sort((a, b) => a.toPar - b.toPar);
     let counting;
     if (state.scoringType === 'best4') counting = players.slice(0, 4);
@@ -1167,8 +1215,9 @@ function renderScores() {
       const isCounting = ts.counting.includes(p);
       const psc = p.toPar < 0 ? 'under' : (p.toPar > 0 ? 'over' : 'even');
       const stCls = p.status === 'cut' ? 'status-cut' : 'status-active';
+      const adjLabel = p.cutAdjusted ? ' (adj)' : '';
       html += `<div class="team-player-row" style="${!isCounting ? 'opacity:0.5' : ''}">
-        <span>${p.name}${!isCounting ? ' (bench)' : ''}</span>
+        <span>${p.name}${!isCounting ? ' (bench)' : ''}${adjLabel}</span>
         <span><span class="score ${psc}">${p.toParDisplay}</span>
         &nbsp;<span style="color:var(--text-light)">Thru ${p.thru}</span>
         &nbsp;<span class="status-badge ${stCls}">${p.status}</span></span>
