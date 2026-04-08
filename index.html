@@ -739,49 +739,66 @@ function joinRoom() {
   });
 }
 
+function applyRoomData(data) {
+  state.teams = toArray(data.teams);
+  state.draftOrder = toArray(data.draftOrder);
+  state.picksPerTeam = data.config?.picksPerTeam || 5;
+  state.scoringType = data.config?.scoringType || 'all';
+  state.cutRule = data.config?.cutRule || 'freeze';
+  state.currentPick = data.currentPick || 0;
+  state.picks = toPicksMap(data.picks);
+  state.drafted = toArray(data.drafted);
+  state.draftComplete = data.draftComplete || false;
+  state.players = data.players || {};
+  state.totalPicks = state.teams.length * state.picksPerTeam;
+
+  const remotePhase = data.phase || 'setup';
+
+  if (!state.isCommissioner && (remotePhase === 'setup')) {
+    switchPhase('lobby');
+    renderLobby();
+    return;
+  }
+
+  if (remotePhase === 'draft') {
+    switchPhase('draft');
+    renderDraft();
+  } else if (remotePhase === 'scores' || state.draftComplete) {
+    switchPhase('scores');
+    renderScores();
+  } else if (state.isCommissioner && remotePhase === 'setup') {
+    if (state.phase !== 'setup') {
+      switchPhase('setup');
+      renderTeamInputs();
+    }
+  }
+}
+
+let pollInterval = null;
+
 function listenToRoom() {
   if (!roomRef) return;
 
+  // Real-time listener
   const unsub = roomRef.on('value', snap => {
-    if (!snap.exists()) return;
-    const data = snap.val();
-
-    state.teams = toArray(data.teams);
-    state.draftOrder = toArray(data.draftOrder);
-    state.picksPerTeam = data.config?.picksPerTeam || 5;
-    state.scoringType = data.config?.scoringType || 'all';
-    state.cutRule = data.config?.cutRule || 'freeze';
-    state.currentPick = data.currentPick || 0;
-    state.picks = toPicksMap(data.picks);
-    state.drafted = toArray(data.drafted);
-    state.draftComplete = data.draftComplete || false;
-    state.players = data.players || {};
-    state.totalPicks = state.teams.length * state.picksPerTeam;
-
-    const remotePhase = data.phase || 'setup';
-
-    // If joiner and draft hasn't started, show lobby
-    if (!state.isCommissioner && (remotePhase === 'setup')) {
-      switchPhase('lobby');
-      renderLobby();
-      return;
-    }
-
-    if (remotePhase === 'draft') {
-      switchPhase('draft');
-      renderDraft();
-    } else if (remotePhase === 'scores' || state.draftComplete) {
-      switchPhase('scores');
-      renderScores();
-    } else if (state.isCommissioner && remotePhase === 'setup') {
-      // Commissioner stays on setup — don't re-switch if already there
-      if (state.phase !== 'setup') {
-        switchPhase('setup');
-        renderTeamInputs();
-      }
+    try {
+      if (!snap.exists()) return;
+      applyRoomData(snap.val());
+    } catch (err) {
+      console.error('Listener error:', err);
     }
   });
   unsubscribers.push(() => roomRef.off('value', unsub));
+
+  // Polling fallback every 3s in case real-time listener stalls
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(() => {
+    if (!roomRef) return;
+    roomRef.once('value').then(snap => {
+      if (!snap.exists()) return;
+      try { applyRoomData(snap.val()); } catch (e) { console.error('Poll error:', e); }
+    }).catch(() => {});
+  }, 3000);
 }
 
 function syncToFirebase(updates) {
