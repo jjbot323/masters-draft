@@ -26,10 +26,10 @@ body {
 }
 header {
   background: linear-gradient(135deg, var(--masters-green), var(--masters-dark));
-  color: white; text-align: center; padding: 24px 16px;
+  color: white; text-align: center; padding: 14px 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3); position: relative;
 }
-header h1 { font-size: 2.2rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+header h1 { font-size: 1.5rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 2px; }
 header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.05rem; letter-spacing: 1px; }
 
 /* Hero landing */
@@ -70,9 +70,9 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
   color: var(--masters-gold); padding: 4px 12px; border-radius: 6px;
   font-size: 0.85rem; font-family: 'Courier New', monospace; letter-spacing: 2px;
 }
-.container { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
-.card { background: var(--card-bg); border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.card h2 { color: var(--masters-green); font-size: 1.4rem; margin-bottom: 16px; border-bottom: 2px solid var(--masters-gold); padding-bottom: 8px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 12px 12px; }
+.card { background: var(--card-bg); border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.card h2 { color: var(--masters-green); font-size: 1.15rem; margin-bottom: 10px; border-bottom: 2px solid var(--masters-gold); padding-bottom: 6px; }
 .btn {
   padding: 10px 24px; border: none; border-radius: 6px; font-size: 1rem;
   cursor: pointer; font-family: inherit; transition: all 0.2s;
@@ -103,9 +103,9 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
   margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 .phase-tab {
-  flex: 1; padding: 14px; text-align: center; font-weight: bold;
+  flex: 1; padding: 8px; text-align: center; font-weight: bold;
   color: var(--text-light); background: var(--card-bg);
-  border: none; cursor: default; font-family: inherit; font-size: 1rem;
+  border: none; cursor: default; font-family: inherit; font-size: 0.85rem;
   border-bottom: 3px solid transparent; transition: all 0.3s;
 }
 .phase-tab.active { color: var(--masters-green); border-bottom-color: var(--masters-gold); }
@@ -209,8 +209,8 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
 .score.over { color: var(--text); }
 .score.even { color: var(--text-light); }
 .scores-table { width: 100%; border-collapse: collapse; }
-.scores-table th { background: var(--masters-green); color: white; padding: 10px 8px; text-align: left; }
-.scores-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
+.scores-table th { background: var(--masters-green); color: white; padding: 6px 6px; text-align: left; font-size: 0.8rem; }
+.scores-table td { padding: 5px 6px; border-bottom: 1px solid var(--border); }
 .team-row { cursor: pointer; }
 .team-row:hover { background: var(--masters-cream); }
 .team-detail { display: none; }
@@ -409,17 +409,14 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
 
   <!-- SCORES -->
   <div class="phase" id="phase-scores">
-    <div class="card" style="padding:16px;">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2 style="margin-bottom:0; border:none; padding:0;">Team Leaderboard</h2>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <button class="btn btn-outline btn-sm" id="edit-rosters-btn" style="display:none;" onclick="window.showEditRosters()">Edit Rosters</button>
-          <div>
-            <span id="tournament-status" style="font-size:0.85rem; color:var(--text-light);"></span>
-            &nbsp;
-            <span id="last-update" style="font-size:0.75rem; color:var(--text-light);"></span>
-          </div>
-        </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; margin-bottom:4px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-weight:bold; color:var(--masters-green); font-size:0.95rem;">Leaderboard</span>
+        <button class="btn btn-outline btn-sm" id="edit-rosters-btn" style="display:none; padding:2px 8px; font-size:0.7rem;" onclick="window.showEditRosters()">Edit</button>
+      </div>
+      <div>
+        <span id="tournament-status" style="font-size:0.7rem; color:var(--text-light);"></span>
+        <span id="last-update" style="font-size:0.65rem; color:var(--text-light); margin-left:4px;"></span>
       </div>
     </div>
     <div id="team-leaderboard"></div>
@@ -1137,13 +1134,27 @@ async function fetchScores() {
       const name = c.athlete?.displayName || '';
       const toPar = c.statistics?.[0]?.displayValue || 'E';
       const rounds = (c.linescores || []).map(ls => ls.displayValue || '--');
+      // Extract tee time
+      const teeTimeRaw = c.linescores?.[0]?.statistics?.categories?.[0]?.stats?.[6]?.displayValue || '';
+      let teeTimeDisplay = '';
+      if (teeTimeRaw) {
+        try {
+          const d = new Date(teeTimeRaw);
+          teeTimeDisplay = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' });
+        } catch(e) { teeTimeDisplay = ''; }
+      }
+      const holesPlayed = c.linescores?.[0]?.linescores?.length || 0;
+      const isCut = c.status?.type?.description === 'cut';
+      const thruVal = c.status?.thru || c.status?.type?.shortDetail || '--';
+
       scoreData[name] = {
         name, toPar: parseToPar(toPar), toParDisplay: toPar,
         position: c.status?.position?.displayName || '--',
-        thru: c.status?.thru || c.status?.type?.shortDetail || '--',
+        thru: holesPlayed > 0 ? thruVal : (teeTimeDisplay || '--'),
         today: rounds.length ? rounds[rounds.length - 1] : '--',
         rounds: rounds,
-        status: c.status?.type?.description === 'cut' ? 'cut' : 'active'
+        teeTime: teeTimeDisplay,
+        status: isCut ? 'cut' : (holesPlayed > 0 ? 'active' : 'tee')
       };
     });
 
@@ -1249,15 +1260,21 @@ function renderScores() {
   const roundHeaders = [];
   for (let r = 1; r <= maxRounds; r++) roundHeaders.push(`R${r}`);
 
-  // Calculate team round totals (sum of counting players' round scores minus par 72)
+  // Calculate team round totals (sum of counting players' round to-par values)
+  function parseRoundToPar(val) {
+    if (!val || val === '--') return null;
+    if (val === 'E') return 0;
+    return parseInt(val) || null;
+  }
+
   teamScores.forEach(ts => {
     ts.roundTotals = [];
     for (let ri = 0; ri < maxRounds; ri++) {
       let total = 0;
       let hasData = false;
       ts.counting.forEach(p => {
-        const rd = (p.rounds || [])[ri];
-        if (rd && rd !== '--') { total += parseInt(rd) - 72; hasData = true; }
+        const rd = parseRoundToPar((p.rounds || [])[ri]);
+        if (rd !== null) { total += rd; hasData = true; }
       });
       ts.roundTotals.push(hasData ? total : null);
     }
@@ -1274,46 +1291,50 @@ function renderScores() {
     return val < 0 ? 'under' : (val > 0 ? 'over' : 'even');
   }
 
-  let html = `<div class="card"><div style="overflow-x:auto;">
-    <table class="scores-table" style="font-size:0.95rem;">
+  let html = `<div class="card" style="padding:12px;"><div style="overflow-x:auto;">
+    <table class="scores-table" style="font-size:0.8rem;">
     <thead><tr>
-      <th style="text-align:center; width:30px;"></th>
-      <th style="text-align:center; width:36px;">Pos</th>
-      <th style="text-align:left;">Team</th>
-      ${roundHeaders.map(r => `<th style="text-align:center; min-width:40px;">${r}</th>`).join('')}
-      <th style="text-align:center;">Total</th>
+      <th style="text-align:center; width:20px; padding:6px 2px;"></th>
+      <th style="text-align:left; padding:6px 8px;">Team</th>
+      ${roundHeaders.map(r => `<th style="text-align:center; padding:6px 4px; min-width:32px;">${r}</th>`).join('')}
+      <th style="text-align:center; padding:6px 8px;">Tot</th>
     </tr></thead><tbody>`;
 
   teamScores.forEach((ts, i) => {
     const sc = ts.totalToPar < 0 ? 'under' : (ts.totalToPar > 0 ? 'over' : 'even');
 
     html += `<tr class="team-row" style="cursor:pointer;" onclick="window.toggleTeamExpand('team-expand-${i}', this)">
-      <td style="text-align:center; font-size:0.7rem; color:var(--text-light);" id="arrow-${i}">&#9654;</td>
-      <td style="text-align:center; font-weight:bold; color:var(--masters-gold);">${i + 1}</td>
-      <td style="text-align:left;"><strong>${ts.team}</strong></td>
-      ${ts.roundTotals.map(rt => `<td style="text-align:center;"><span class="score ${roundTotalClass(rt)}" style="font-size:0.85rem;">${formatRoundTotal(rt)}</span></td>`).join('')}
-      <td style="text-align:center;"><span class="score ${sc}" style="font-size:1.1rem;">${ts.totalDisplay}</span></td>
+      <td style="text-align:center; font-size:0.6rem; color:var(--text-light); padding:6px 2px;" id="arrow-${i}">&#9654;</td>
+      <td style="text-align:left; padding:6px 8px;"><strong style="color:var(--masters-green);">${i + 1}.</strong> ${ts.team}</td>
+      ${ts.roundTotals.map(rt => `<td style="text-align:center; padding:6px 4px;"><span class="score ${roundTotalClass(rt)}">${formatRoundTotal(rt)}</span></td>`).join('')}
+      <td style="text-align:center; padding:6px 8px;"><span class="score ${sc}" style="font-weight:bold;">${ts.totalDisplay}</span></td>
     </tr>`;
 
     // Expandable player rows
     ts.players.forEach(p => {
       const isCounting = ts.counting.includes(p);
       const psc = p.toPar < 0 ? 'under' : (p.toPar > 0 ? 'over' : 'even');
-      const stCls = p.status === 'cut' ? 'status-cut' : 'status-active';
-      const adjLabel = p.cutAdjusted ? ' *' : '';
-      const opacity = !isCounting ? 'opacity:0.45;' : '';
+      const adjLabel = p.cutAdjusted ? '*' : '';
+      const opacity = !isCounting ? 'opacity:0.4;' : '';
       const rounds = p.rounds || [];
+      // Status: show "CUT" badge only for cut, tee time for not started, thru for in progress
+      let statusHtml = '';
+      if (p.status === 'cut') {
+        statusHtml = '<span class="status-badge status-cut">CUT</span>';
+      } else if (p.status === 'tee' && p.teeTime) {
+        statusHtml = `<span style="color:var(--text-light);">${p.teeTime}</span>`;
+      } else if (p.thru && p.thru !== '--') {
+        statusHtml = `<span style="color:var(--text-light);">Thru ${p.thru}</span>`;
+      }
 
       html += `<tr class="team-expand-row team-expand-${i}" style="display:none; ${opacity} background:#fafafa;">
-        <td></td>
-        <td></td>
-        <td style="text-align:left; padding-left:12px; font-size:0.85rem; white-space:nowrap;">
-          ${p.name}${!isCounting ? ' <span style="color:var(--text-light);">(bench)</span>' : ''}${adjLabel}
-          <span class="status-badge ${stCls}" style="margin-left:4px;">${p.status}</span>
-          <span style="color:var(--text-light); font-size:0.75rem; margin-left:4px;">Thru ${p.thru}</span>
+        <td style="padding:4px 2px;"></td>
+        <td style="text-align:left; padding:4px 8px 4px 16px; white-space:nowrap; font-size:0.75rem;">
+          ${p.name}${!isCounting ? ' <span style="color:var(--text-light);">(B)</span>' : ''}${adjLabel}
+          &nbsp;${statusHtml}
         </td>
-        ${roundHeaders.map((_, ri) => `<td style="text-align:center; font-size:0.8rem; color:var(--text-light);">${rounds[ri] || '--'}</td>`).join('')}
-        <td style="text-align:center;"><span class="score ${psc}" style="font-size:0.9rem;">${p.toParDisplay}</span></td>
+        ${roundHeaders.map((_, ri) => `<td style="text-align:center; padding:4px; font-size:0.75rem; color:var(--text-light);">${rounds[ri] || '--'}</td>`).join('')}
+        <td style="text-align:center; padding:4px 8px;"><span class="score ${psc}">${p.toParDisplay}</span></td>
       </tr>`;
     });
   });
@@ -1323,7 +1344,7 @@ function renderScores() {
 
   // Full leaderboard
   const allPlayers = Object.values(scoreData).sort((a, b) => a.toPar - b.toPar);
-  let lbHTML = `<thead><tr><th>Pos</th><th>Player</th><th>To Par</th><th>Thru</th><th>Today</th><th>Team</th></tr></thead><tbody>`;
+  let lbHTML = `<thead><tr><th style="padding:4px 6px;">Pos</th><th style="padding:4px 6px;">Player</th><th style="padding:4px 6px;">To Par</th><th style="padding:4px 6px;">Thru</th><th style="padding:4px 6px;">Today</th><th style="padding:4px 6px;">Team</th></tr></thead><tbody>`;
   allPlayers.forEach((p, i) => {
     const team = findPlayerTeam(p.name);
     const sc = p.toPar < 0 ? 'under' : (p.toPar > 0 ? 'over' : 'even');
