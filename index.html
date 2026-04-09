@@ -1291,7 +1291,9 @@ function renderScores() {
     return val < 0 ? 'under' : (val > 0 ? 'over' : 'even');
   }
 
-  let html = `<div class="card" style="padding:12px;"><div style="overflow-x:auto;">
+  let html = `<div class="card" style="padding:12px;">
+    <div style="text-align:right; font-size:0.65rem; color:var(--text-light); margin-bottom:4px; font-style:italic;">tap team to expand</div>
+    <div style="overflow-x:auto;">
     <table class="scores-table" style="font-size:0.8rem;">
     <thead><tr>
       <th style="text-align:center; width:20px; padding:6px 2px;"></th>
