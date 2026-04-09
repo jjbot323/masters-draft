@@ -1214,11 +1214,15 @@ function findPlayerScore(playerName) {
   for (const key of Object.keys(scoreData)) {
     if (stripAccents(key).toLowerCase() === norm) return scoreData[key];
   }
-  // Try last name match (accent-insensitive, match as whole last name)
-  const last = stripAccents(playerName.split(' ').pop()).toLowerCase();
+  // Try last name + first initial match (accent-insensitive)
+  const parts = playerName.split(' ');
+  const first = stripAccents(parts[0] || '').toLowerCase();
+  const last = stripAccents(parts[parts.length - 1] || '').toLowerCase();
   for (const key of Object.keys(scoreData)) {
-    const keyLast = stripAccents(key.split(' ').pop()).toLowerCase();
-    if (keyLast === last) return scoreData[key];
+    const kParts = key.split(' ');
+    const kFirst = stripAccents(kParts[0] || '').toLowerCase();
+    const kLast = stripAccents(kParts[kParts.length - 1] || '').toLowerCase();
+    if (kLast === last && kFirst[0] === first[0]) return scoreData[key];
   }
   return { name: playerName, toPar: 0, toParDisplay: '--', position: '--', thru: '--', today: '--', status: 'unknown' };
 }
