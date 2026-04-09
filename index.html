@@ -296,10 +296,6 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
               <label>Your Name</label>
               <input type="text" id="join-name" placeholder="Enter your name">
             </div>
-            <div class="form-row">
-              <label>Commissioner PIN <span style="font-weight:normal; color:var(--text-light);">(optional)</span></label>
-              <input type="password" id="join-pin" placeholder="Enter PIN to join as commissioner" maxlength="8">
-            </div>
             <div class="btn-group">
               <button class="btn btn-primary" onclick="joinRoom()">Join</button>
               <button class="btn btn-outline" onclick="hideJoin()">Cancel</button>
@@ -635,8 +631,6 @@ function getSnakeOrder() {
 window.showCreate = function() {
   const name = prompt("Enter your name:");
   if (!name) return;
-  const pin = prompt("Set a commissioner PIN (4 digits):");
-  if (!pin || pin.length < 4) { showToast('PIN must be at least 4 characters'); return; }
   myName = name.trim();
   isCommissioner = true;
   roomCode = generateRoomCode();
@@ -644,7 +638,6 @@ window.showCreate = function() {
 
   const roomData = {
     commissioner: myName,
-    commissionerPin: pin.trim(),
     phase: 'setup',
     config: { picksPerTeam: 5, scoringType: 'all', cutRule: 'freeze', numTeams: 3 },
     teams: [],
@@ -680,11 +673,11 @@ window.hideJoin = function() {
 window.joinRoom = function() {
   const code = document.getElementById('join-code').value.trim().toUpperCase();
   const name = document.getElementById('join-name').value.trim();
-  const pin = (document.getElementById('join-pin')?.value || '').trim();
   if (!code || code.length < 4) { showToast('Enter a 4-character room code'); return; }
   if (!name) { showToast('Enter your name'); return; }
 
   myName = name;
+  isCommissioner = false;
   roomCode = code;
   roomRef = ref(db, 'rooms/' + code);
 
@@ -693,17 +686,6 @@ window.joinRoom = function() {
       showToast('Room not found. Check the code.');
       roomRef = null;
       return;
-    }
-    const data = snap.val();
-    // Check commissioner PIN
-    if (pin && data.commissionerPin && pin === data.commissionerPin) {
-      isCommissioner = true;
-      showToast('Joined as commissioner');
-    } else if (pin && pin.length > 0) {
-      isCommissioner = false;
-      showToast('Wrong PIN — joined as player');
-    } else {
-      isCommissioner = false;
     }
     // Add self to players
     update(ref(db, 'rooms/' + code + '/players/' + name), { online: true, joined: Date.now() });
