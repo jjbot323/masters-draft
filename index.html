@@ -1249,28 +1249,53 @@ function renderScores() {
   const roundHeaders = [];
   for (let r = 1; r <= maxRounds; r++) roundHeaders.push(`R${r}`);
 
+  // Calculate team round totals (sum of counting players' round scores minus par 72)
+  teamScores.forEach(ts => {
+    ts.roundTotals = [];
+    for (let ri = 0; ri < maxRounds; ri++) {
+      let total = 0;
+      let hasData = false;
+      ts.counting.forEach(p => {
+        const rd = (p.rounds || [])[ri];
+        if (rd && rd !== '--') { total += parseInt(rd) - 72; hasData = true; }
+      });
+      ts.roundTotals.push(hasData ? total : null);
+    }
+  });
+
+  function formatRoundTotal(val) {
+    if (val === null) return '--';
+    if (val === 0) return 'E';
+    return val > 0 ? '+' + val : '' + val;
+  }
+
+  function roundTotalClass(val) {
+    if (val === null) return '';
+    return val < 0 ? 'under' : (val > 0 ? 'over' : 'even');
+  }
+
   let html = `<div class="card"><div style="overflow-x:auto;">
     <table class="scores-table" style="font-size:0.95rem;">
     <thead><tr>
-      <th style="text-align:center; width:40px;">Pos</th>
+      <th style="text-align:center; width:30px;"></th>
+      <th style="text-align:center; width:36px;">Pos</th>
       <th style="text-align:left;">Team</th>
+      ${roundHeaders.map(r => `<th style="text-align:center; min-width:40px;">${r}</th>`).join('')}
       <th style="text-align:center;">Total</th>
-      <th style="text-align:center;">Thru</th>
     </tr></thead><tbody>`;
 
   teamScores.forEach((ts, i) => {
     const sc = ts.totalToPar < 0 ? 'under' : (ts.totalToPar > 0 ? 'over' : 'even');
-    // Best thru indicator: show worst thru among counting players
-    const countingThru = ts.counting.map(p => p.thru).join(', ');
 
     html += `<tr class="team-row" style="cursor:pointer;" onclick="window.toggleTeamExpand('team-expand-${i}', this)">
+      <td style="text-align:center; font-size:0.7rem; color:var(--text-light);" id="arrow-${i}">&#9654;</td>
       <td style="text-align:center; font-weight:bold; color:var(--masters-gold);">${i + 1}</td>
       <td style="text-align:left;"><strong>${ts.team}</strong></td>
+      ${ts.roundTotals.map(rt => `<td style="text-align:center;"><span class="score ${roundTotalClass(rt)}" style="font-size:0.85rem;">${formatRoundTotal(rt)}</span></td>`).join('')}
       <td style="text-align:center;"><span class="score ${sc}" style="font-size:1.1rem;">${ts.totalDisplay}</span></td>
-      <td style="text-align:center; color:var(--text-light); font-size:0.85rem;">${ts.counting.map(p => p.thru).filter((v,j,a) => a.indexOf(v) === j).join(', ')}</td>
     </tr>`;
 
-    // Expandable player detail rows (hidden by default)
+    // Expandable player rows
     ts.players.forEach(p => {
       const isCounting = ts.counting.includes(p);
       const psc = p.toPar < 0 ? 'under' : (p.toPar > 0 ? 'over' : 'even');
@@ -1278,27 +1303,18 @@ function renderScores() {
       const adjLabel = p.cutAdjusted ? ' *' : '';
       const opacity = !isCounting ? 'opacity:0.45;' : '';
       const rounds = p.rounds || [];
-      const roundsStr = rounds.length > 0 ? rounds.join(' / ') : '';
 
-      html += `<tr class="team-expand-row team-expand-${i}" style="display:none; ${opacity}">
+      html += `<tr class="team-expand-row team-expand-${i}" style="display:none; ${opacity} background:#fafafa;">
         <td></td>
-        <td style="text-align:left; padding-left:20px; font-size:0.85rem;">
+        <td></td>
+        <td style="text-align:left; padding-left:12px; font-size:0.85rem; white-space:nowrap;">
           ${p.name}${!isCounting ? ' <span style="color:var(--text-light);">(bench)</span>' : ''}${adjLabel}
-          <span class="status-badge ${stCls}" style="margin-left:6px;">${p.status}</span>
+          <span class="status-badge ${stCls}" style="margin-left:4px;">${p.status}</span>
+          <span style="color:var(--text-light); font-size:0.75rem; margin-left:4px;">Thru ${p.thru}</span>
         </td>
+        ${roundHeaders.map((_, ri) => `<td style="text-align:center; font-size:0.8rem; color:var(--text-light);">${rounds[ri] || '--'}</td>`).join('')}
         <td style="text-align:center;"><span class="score ${psc}" style="font-size:0.9rem;">${p.toParDisplay}</span></td>
-        <td style="text-align:center; color:var(--text-light); font-size:0.8rem;">${p.thru}</td>
       </tr>`;
-
-      // Round details sub-row
-      if (rounds.length > 0) {
-        html += `<tr class="team-expand-row team-expand-${i}" style="display:none; ${opacity}">
-          <td></td>
-          <td colspan="3" style="padding-left:20px; font-size:0.75rem; color:var(--text-light); padding-top:0; padding-bottom:8px; border-bottom:1px solid #eee;">
-            ${roundHeaders.map((r, ri) => `<span style="margin-right:12px;">${r}: <strong>${rounds[ri] || '--'}</strong></span>`).join('')}
-          </td>
-        </tr>`;
-      }
     });
   });
 
@@ -1333,6 +1349,10 @@ window.toggleTeamExpand = function(cls, row) {
   const isOpen = rows.length > 0 && rows[0].style.display !== 'none';
   rows.forEach(r => r.style.display = isOpen ? 'none' : 'table-row');
   if (row) row.style.background = isOpen ? '' : 'var(--masters-cream)';
+  // Rotate arrow
+  const idx = cls.replace('team-expand-', '');
+  const arrow = document.getElementById('arrow-' + idx);
+  if (arrow) arrow.innerHTML = isOpen ? '&#9654;' : '&#9660;';
 };
 
 let scoreInterval = null;
