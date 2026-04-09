@@ -1380,7 +1380,7 @@ let scoreInterval = null;
 function startScoreRefresh() {
   if (scoreInterval) clearInterval(scoreInterval);
   fetchScores();
-  scoreInterval = setInterval(fetchScores, 120000);
+  scoreInterval = setInterval(fetchScores, 60000);
 }
 
 // ========================================
