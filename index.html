@@ -1319,9 +1319,11 @@ function renderScores() {
       const adjLabel = p.cutAdjusted ? '*' : '';
       const opacity = !isCounting ? 'opacity:0.4;' : '';
       const rounds = p.rounds || [];
-      // Status: show "CUT" badge only for cut, tee time for not started, thru for in progress
+      // Status: show badge/info based on player status
       let statusHtml = '';
-      if (p.status === 'cut') {
+      if (p.status === 'unknown') {
+        statusHtml = '<span class="status-badge status-cut">NOT IN FIELD</span>';
+      } else if (p.status === 'cut') {
         statusHtml = '<span class="status-badge status-cut">CUT</span>';
       } else if (p.status === 'tee' && p.teeTime) {
         statusHtml = `<span style="color:var(--text-light);">${p.teeTime}</span>`;
