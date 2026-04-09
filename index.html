@@ -1228,8 +1228,23 @@ function findPlayerScore(playerName) {
 }
 
 function findPlayerTeam(playerName) {
+  const norm = stripAccents(playerName).toLowerCase();
+  const parts = playerName.split(' ');
+  const pFirst = stripAccents(parts[0] || '').toLowerCase();
+  const pLast = stripAccents(parts[parts.length - 1] || '').toLowerCase();
   for (const team of room.draftOrder) {
-    if ((room.picks[team] || []).some(p => p === playerName || playerName.includes(p?.split(' ').pop()))) return team;
+    for (const drafted of (room.picks[team] || [])) {
+      if (!drafted) continue;
+      // Exact match
+      if (drafted === playerName) return team;
+      // Accent-insensitive exact
+      if (stripAccents(drafted).toLowerCase() === norm) return team;
+      // Last name + first initial
+      const dParts = drafted.split(' ');
+      const dFirst = stripAccents(dParts[0] || '').toLowerCase();
+      const dLast = stripAccents(dParts[dParts.length - 1] || '').toLowerCase();
+      if (dLast === pLast && dFirst[0] === pFirst[0]) return team;
+    }
   }
   return null;
 }
