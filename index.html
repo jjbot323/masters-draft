@@ -275,9 +275,9 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
       <div class="landing-hero-inner">
 
         <div id="landing-buttons">
-          <button class="landing-btn" onclick="showCreate()">
+          <button class="landing-btn" disabled style="opacity:0.4; cursor:not-allowed; pointer-events:none;">
             <div class="icon">+</div>
-            <div><div class="label">Create New Draft</div></div>
+            <div><div class="label">Create New Draft</div><div class="desc" style="font-size:0.8rem; color:var(--text-light);">Tournament in progress</div></div>
           </button>
           <button class="landing-btn" onclick="showJoin()">
             <div class="icon">&#x1F517;</div>
