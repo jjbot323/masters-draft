@@ -1132,7 +1132,7 @@ async function fetchScores() {
     scoreData = {};
     (comp.competitors || []).forEach(c => {
       const name = c.athlete?.displayName || '';
-      const toPar = c.statistics?.[0]?.displayValue || 'E';
+      const toPar = c.score || c.statistics?.[0]?.displayValue || 'E';
       const rounds = (c.linescores || []).map(ls => ls.displayValue || '--');
       // Extract tee time
       // ESPN tee time format: "Thu Apr 09 13:44:00 PDT 2026" — timezone label is wrong, time is already ET
@@ -1214,10 +1214,11 @@ function findPlayerScore(playerName) {
   for (const key of Object.keys(scoreData)) {
     if (stripAccents(key).toLowerCase() === norm) return scoreData[key];
   }
-  // Try last name match (accent-insensitive)
+  // Try last name match (accent-insensitive, match as whole last name)
   const last = stripAccents(playerName.split(' ').pop()).toLowerCase();
   for (const key of Object.keys(scoreData)) {
-    if (stripAccents(key).toLowerCase().includes(last)) return scoreData[key];
+    const keyLast = stripAccents(key.split(' ').pop()).toLowerCase();
+    if (keyLast === last) return scoreData[key];
   }
   return { name: playerName, toPar: 0, toParDisplay: '--', position: '--', thru: '--', today: '--', status: 'unknown' };
 }
