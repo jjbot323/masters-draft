@@ -1186,11 +1186,21 @@ function usePlaceholderScores() {
   renderScores();
 }
 
+function stripAccents(str) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 function findPlayerScore(playerName) {
   if (scoreData[playerName]) return scoreData[playerName];
-  const last = playerName.split(' ').pop().toLowerCase();
+  // Try accent-insensitive exact match
+  const norm = stripAccents(playerName).toLowerCase();
   for (const key of Object.keys(scoreData)) {
-    if (key.toLowerCase().includes(last)) return scoreData[key];
+    if (stripAccents(key).toLowerCase() === norm) return scoreData[key];
+  }
+  // Try last name match (accent-insensitive)
+  const last = stripAccents(playerName.split(' ').pop()).toLowerCase();
+  for (const key of Object.keys(scoreData)) {
+    if (stripAccents(key).toLowerCase().includes(last)) return scoreData[key];
   }
   return { name: playerName, toPar: 0, toParDisplay: '--', position: '--', thru: '--', today: '--', status: 'unknown' };
 }
