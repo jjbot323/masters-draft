@@ -1204,7 +1204,12 @@ function usePlaceholderScores() {
 }
 
 function stripAccents(str) {
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/ø/g, 'o').replace(/Ø/g, 'O')
+    .replace(/å/g, 'a').replace(/Å/g, 'A')
+    .replace(/æ/g, 'ae').replace(/Æ/g, 'AE')
+    .replace(/ð/g, 'd').replace(/Ð/g, 'D')
+    .replace(/þ/g, 'th').replace(/Þ/g, 'Th');
 }
 
 function findPlayerScore(playerName) {
