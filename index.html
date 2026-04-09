@@ -1269,7 +1269,7 @@ function renderScores() {
       const rowStyle = !isCounting ? 'opacity:0.45;' : '';
       const rounds = p.rounds || [];
       html += `<tr style="${rowStyle}">
-        <td style="text-align:left; white-space:nowrap;">${p.name.split(' ').pop()}${!isCounting ? ' <span style="font-size:0.7rem; color:var(--text-light);">(bench)</span>' : ''}${adjLabel}</td>
+        <td style="text-align:left; white-space:nowrap;">${p.name}${!isCounting ? ' <span style="font-size:0.7rem; color:var(--text-light);">(bench)</span>' : ''}${adjLabel}</td>
         ${roundHeaders.map((_, ri) => `<td style="text-align:center;">${rounds[ri] || '--'}</td>`).join('')}
         <td style="text-align:center;"><span class="score ${psc}">${p.toParDisplay}</span></td>
         <td style="text-align:center; color:var(--text-light);">${p.thru}</td>
