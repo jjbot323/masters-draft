@@ -412,10 +412,13 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
     <div class="card" style="padding:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h2 style="margin-bottom:0; border:none; padding:0;">Team Leaderboard</h2>
-        <div>
-          <span id="tournament-status" style="font-size:0.85rem; color:var(--text-light);"></span>
-          &nbsp;
-          <span id="last-update" style="font-size:0.75rem; color:var(--text-light);"></span>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="btn btn-outline btn-sm" id="edit-rosters-btn" style="display:none;" onclick="window.showEditRosters()">Edit Rosters</button>
+          <div>
+            <span id="tournament-status" style="font-size:0.85rem; color:var(--text-light);"></span>
+            &nbsp;
+            <span id="last-update" style="font-size:0.75rem; color:var(--text-light);"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -437,6 +440,33 @@ header .subtitle { color: var(--masters-gold); font-style: italic; font-size: 1.
     <div class="btn-group" style="justify-content:center">
       <button class="btn btn-primary" onclick="confirmPick()">Confirm Pick</button>
       <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Rosters Modal -->
+<div class="modal-overlay" id="edit-rosters-modal">
+  <div class="modal-box" style="max-width:500px; text-align:left; max-height:80vh; overflow-y:auto;">
+    <h3 style="color:var(--masters-green); margin-bottom:16px; text-align:center;">Edit Rosters</h3>
+    <div id="edit-rosters-content"></div>
+    <div class="btn-group" style="justify-content:center; margin-top:16px;">
+      <button class="btn btn-outline" onclick="window.closeEditRosters()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Swap Player Modal -->
+<div class="modal-overlay" id="swap-modal">
+  <div class="modal-box" style="max-width:450px; text-align:left; max-height:80vh; overflow-y:auto;">
+    <h3 style="color:var(--masters-green); margin-bottom:4px; text-align:center;">Swap Player</h3>
+    <div style="text-align:center; color:var(--text-light); margin-bottom:12px;" id="swap-info"></div>
+    <div class="search-box" style="margin-bottom:8px;">
+      <span class="search-icon">&#x1F50D;</span>
+      <input type="text" id="swap-search" placeholder="Search available players..." oninput="window.renderSwapGrid()">
+    </div>
+    <div class="player-grid" id="swap-grid" style="max-height:300px;"></div>
+    <div class="btn-group" style="justify-content:center; margin-top:12px;">
+      <button class="btn btn-outline" onclick="window.closeSwapModal()">Cancel</button>
     </div>
   </div>
 </div>
@@ -1000,6 +1030,91 @@ window.undoPick = function() {
 };
 
 // ========================================
+// EDIT ROSTERS (Commissioner only)
+// ========================================
+let swapTeam = null;
+let swapIndex = null;
+
+window.showEditRosters = function() {
+  const content = document.getElementById('edit-rosters-content');
+  let html = '';
+  room.draftOrder.forEach(team => {
+    const players = room.picks[team] || [];
+    html += `<div style="margin-bottom:16px;">
+      <div style="font-weight:bold; color:var(--masters-green); margin-bottom:8px; font-size:1.05rem;">${team}</div>`;
+    players.forEach((player, i) => {
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #eee;">
+        <span>${player}</span>
+        <button class="btn btn-outline btn-sm" style="padding:3px 10px; font-size:0.75rem;" onclick="window.startSwap('${team.replace(/'/g, "\\'")}', ${i})">Swap</button>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  content.innerHTML = html;
+  document.getElementById('edit-rosters-modal').classList.add('show');
+};
+
+window.closeEditRosters = function() {
+  document.getElementById('edit-rosters-modal').classList.remove('show');
+};
+
+window.startSwap = function(team, index) {
+  swapTeam = team;
+  swapIndex = index;
+  const currentPlayer = (room.picks[team] || [])[index];
+  document.getElementById('swap-info').textContent = `Replacing ${currentPlayer} on ${team}`;
+  document.getElementById('swap-search').value = '';
+  window.renderSwapGrid();
+  document.getElementById('edit-rosters-modal').classList.remove('show');
+  document.getElementById('swap-modal').classList.add('show');
+};
+
+window.renderSwapGrid = function() {
+  const search = (document.getElementById('swap-search')?.value || '').toLowerCase();
+  const draftedSet = new Set(room.drafted || []);
+  const grid = document.getElementById('swap-grid');
+
+  grid.innerHTML = MASTERS_FIELD
+    .filter(p => p.name.toLowerCase().includes(search))
+    .map(p => {
+      const isDrafted = draftedSet.has(p.name);
+      const escapedName = p.name.replace(/'/g, "\\'");
+      return `<div class="player-card ${isDrafted ? 'drafted' : ''}"
+        onclick="${isDrafted ? '' : `window.confirmSwap('${escapedName}')`}">
+        <span class="player-name">${p.name}</span>
+        <span class="player-rank">#${p.rank}</span>
+      </div>`;
+    }).join('');
+};
+
+window.confirmSwap = function(newPlayer) {
+  if (swapTeam === null || swapIndex === null) return;
+
+  const oldPlayer = (room.picks[swapTeam] || [])[swapIndex];
+
+  // Update local state
+  room.picks[swapTeam][swapIndex] = newPlayer;
+  room.drafted = (room.drafted || []).filter(n => n !== oldPlayer);
+  room.drafted.push(newPlayer);
+
+  // Sync to Firebase
+  roomUpdate({
+    picks: picksMapToObj(room.picks),
+    drafted: draftedToObj(room.drafted)
+  });
+
+  showToast(`Swapped ${oldPlayer} for ${newPlayer} on ${swapTeam}`);
+  window.closeSwapModal();
+  renderScores();
+};
+
+window.closeSwapModal = function() {
+  document.getElementById('swap-modal').classList.remove('show');
+  swapTeam = null;
+  swapIndex = null;
+};
+
+// ========================================
 // SCORES
 // ========================================
 let scoreData = {};
@@ -1218,7 +1333,11 @@ function switchPhase(phase) {
     });
   }
 
-  if (phase === 'scores') startScoreRefresh();
+  if (phase === 'scores') {
+    startScoreRefresh();
+    const editBtn = document.getElementById('edit-rosters-btn');
+    if (editBtn) editBtn.style.display = isCommissioner ? 'inline-block' : 'none';
+  }
 }
 
 // ========================================
