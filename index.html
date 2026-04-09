@@ -1135,13 +1135,19 @@ async function fetchScores() {
       const toPar = c.statistics?.[0]?.displayValue || 'E';
       const rounds = (c.linescores || []).map(ls => ls.displayValue || '--');
       // Extract tee time
+      // ESPN tee time format: "Thu Apr 09 13:44:00 PDT 2026" — timezone label is wrong, time is already ET
       const teeTimeRaw = c.linescores?.[0]?.statistics?.categories?.[0]?.stats?.[6]?.displayValue || '';
       let teeTimeDisplay = '';
       if (teeTimeRaw) {
-        try {
-          const d = new Date(teeTimeRaw);
-          teeTimeDisplay = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' });
-        } catch(e) { teeTimeDisplay = ''; }
+        const match = teeTimeRaw.match(/(\d{2}):(\d{2}):\d{2}/);
+        if (match) {
+          let h = parseInt(match[1]);
+          const m = match[2];
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          if (h > 12) h -= 12;
+          if (h === 0) h = 12;
+          teeTimeDisplay = `${h}:${m} ${ampm}`;
+        }
       }
       const holesPlayed = c.linescores?.[0]?.linescores?.length || 0;
       const isCut = c.status?.type?.description === 'cut';
