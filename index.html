@@ -1305,7 +1305,7 @@ function renderScores() {
 
     html += `<tr class="team-row" style="cursor:pointer;" onclick="window.toggleTeamExpand('team-expand-${i}', this)">
       <td style="text-align:center; font-size:0.6rem; color:var(--text-light); padding:6px 2px;" id="arrow-${i}">&#9654;</td>
-      <td style="text-align:left; padding:6px 8px;"><strong style="color:var(--masters-green);">${i + 1}.</strong> ${ts.team}</td>
+      <td style="text-align:left; padding:6px 8px;"><strong>${ts.team}</strong></td>
       ${ts.roundTotals.map(rt => `<td style="text-align:center; padding:6px 4px;"><span class="score ${roundTotalClass(rt)}">${formatRoundTotal(rt)}</span></td>`).join('')}
       <td style="text-align:center; padding:6px 8px;"><span class="score ${sc}" style="font-weight:bold;">${ts.totalDisplay}</span></td>
     </tr>`;
