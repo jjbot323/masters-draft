@@ -1150,11 +1150,15 @@ async function fetchScores() {
         }
       }
       const holesPlayed = c.linescores?.[0]?.linescores?.length || 0;
-      const isCut = c.status?.type?.description === 'cut';
+      const espnCut = c.status?.type?.description === 'cut';
+      // Masters cut: worse than +4 after R2 is cut, even if ESPN hasn't flagged it
+      const scoreToPar = parseToPar(toPar);
+      const hasR2 = rounds.length >= 2 && rounds[1] && rounds[1] !== '--' && rounds[1] !== '-';
+      const isCut = espnCut || (hasR2 && scoreToPar > 4);
       const thruVal = c.status?.thru || c.status?.type?.shortDetail || '--';
 
       scoreData[name] = {
-        name, toPar: parseToPar(toPar), toParDisplay: toPar,
+        name, toPar: scoreToPar, toParDisplay: toPar,
         position: c.status?.position?.displayName || '--',
         thru: holesPlayed > 0 ? thruVal : (teeTimeDisplay || '--'),
         today: rounds.length ? rounds[rounds.length - 1] : '--',
