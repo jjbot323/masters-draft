@@ -1257,29 +1257,46 @@ function findPlayerTeam(playerName) {
 function renderScores() {
   if (Object.keys(scoreData).length === 0) { fetchScores(); return; }
 
+  // Calculate field average per round (for cut player floor)
+  function calcFieldRoundAvg(roundIdx) {
+    const vals = Object.values(scoreData)
+      .map(p => parseRoundToPar((p.rounds || [])[roundIdx]))
+      .filter(v => v !== null);
+    if (vals.length === 0) return 0;
+    return vals.reduce((a, b) => a + b, 0) / vals.length;
+  }
+  const fieldAvgR3 = calcFieldRoundAvg(2);
+  const fieldAvgR4 = calcFieldRoundAvg(3);
+
   const teamScores = room.draftOrder.map(team => {
     const players = (room.picks[team] || []).map(name => ({ ...findPlayerScore(name), name }));
 
     // Apply missed cut rule: project Sat/Sun as average of Thu/Fri rounds
+    // If field avg + 2 is worse, use that instead
     if (room.cutRule === 'freeze') {
       players.forEach(p => {
         if (p.status === 'cut') {
           const rounds = p.rounds || [];
-          // Parse Thu (R1) and Fri (R2) to-par values
           const r1 = parseRoundToPar(rounds[0]);
           const r2 = parseRoundToPar(rounds[1]);
           if (r1 !== null || r2 !== null) {
             const validRounds = [r1, r2].filter(v => v !== null);
-            const avg = validRounds.reduce((a, b) => a + b, 0) / validRounds.length;
-            const projRound = Math.round(avg);
-            const projDisplay = projRound === 0 ? 'E' : (projRound > 0 ? '+' + projRound : '' + projRound);
-            // Add projected R3 and R4 to rounds display
-            if (rounds.length < 3 || rounds[2] === '--') rounds[2] = projDisplay + '*';
-            if (rounds.length < 4 || rounds[3] === '--') rounds[3] = projDisplay + '*';
+            const playerAvg = validRounds.reduce((a, b) => a + b, 0) / validRounds.length;
+
+            // R3 projection: max of player avg and field avg + 2
+            const fieldFloorR3 = Math.round(fieldAvgR3) + 2;
+            const projR3 = Math.max(Math.round(playerAvg), fieldFloorR3);
+            // R4 projection: same logic
+            const fieldFloorR4 = Math.round(fieldAvgR4) + 2;
+            const projR4 = Math.max(Math.round(playerAvg), fieldFloorR4);
+
+            function fmtProj(v) { return (v === 0 ? 'E' : (v > 0 ? '+' + v : '' + v)) + '*'; }
+            if (rounds.length < 3 || rounds[2] === '--') rounds[2] = fmtProj(projR3);
+            if (rounds.length < 4 || rounds[3] === '--') rounds[3] = fmtProj(projR4);
             p.rounds = rounds;
-            // Update total: actual Thu+Fri plus 2x projected
+
             const actualToPar = (r1 || 0) + (r2 || 0);
-            p.toPar = actualToPar + (projRound * 2);
+            p.toPar = actualToPar + projR3 + projR4;
             p.toParDisplay = p.toPar === 0 ? 'E' : (p.toPar > 0 ? '+' + p.toPar : '' + p.toPar);
             p.cutAdjusted = true;
           }
@@ -1376,7 +1393,10 @@ function renderScores() {
         statusHtml = `<span style="color:var(--text-light);">Thru ${p.thru}</span>`;
       }
 
-      html += `<tr class="team-expand-row team-expand-${i}" style="display:none; ${opacity} background:#fafafa;">
+      const rowBg = p.status === 'cut' ? 'background:#fdf0f0; border-left:3px solid #dc3545;' :
+                   p.status === 'unknown' ? 'background:#fff3cd; border-left:3px solid #ffc107;' :
+                   'background:#fafafa;';
+      html += `<tr class="team-expand-row team-expand-${i}" style="display:none; ${opacity} ${rowBg}">
         <td style="padding:4px 2px;"></td>
         <td style="text-align:left; padding:4px 8px 4px 16px; white-space:nowrap; font-size:0.75rem;">
           ${p.name}${!isCounting ? ' <span style="color:var(--text-light);">(B)</span>' : ''}${adjLabel}
