@@ -1151,10 +1151,11 @@ async function fetchScores() {
       }
       const holesPlayed = c.linescores?.[0]?.linescores?.length || 0;
       const espnCut = c.status?.type?.description === 'cut';
-      // Masters cut: worse than +4 after R2 is cut, even if ESPN hasn't flagged it
       const scoreToPar = parseToPar(toPar);
       const hasR2 = rounds.length >= 2 && rounds[1] && rounds[1] !== '--' && rounds[1] !== '-';
-      const isCut = espnCut || (hasR2 && scoreToPar > 4);
+      const hasR3 = rounds.length >= 3 && rounds[2] && rounds[2] !== '--' && rounds[2] !== '-';
+      // Cut if ESPN says so, OR worse than +4 after R2 AND no R3 score (meaning they didn't play weekend)
+      const isCut = espnCut || (hasR2 && !hasR3 && scoreToPar > 4);
       const thruVal = c.status?.thru || c.status?.type?.shortDetail || '--';
 
       scoreData[name] = {
