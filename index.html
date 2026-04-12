@@ -1293,8 +1293,11 @@ function renderScores() {
             const projR4 = fieldAvgR4 !== null ? Math.max(playerAvg, Math.round(fieldAvgR4)) : playerAvg;
 
             function fmtProj(v) { return (v === 0 ? 'E' : (v > 0 ? '+' + v : '' + v)) + '*'; }
-            if (rounds.length < 3 || rounds[2] === '--') rounds[2] = fmtProj(projR3);
-            if (rounds.length < 4 || rounds[3] === '--') rounds[3] = fmtProj(projR4);
+            function isBlank(v) { return !v || v === '--' || v === '-'; }
+            // Ensure rounds array has 4 slots
+            while (rounds.length < 4) rounds.push('--');
+            if (isBlank(rounds[2])) rounds[2] = fmtProj(projR3);
+            if (isBlank(rounds[3])) rounds[3] = fmtProj(projR4);
             p.rounds = rounds;
 
             const actualToPar = (r1 || 0) + (r2 || 0);
