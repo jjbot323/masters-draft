@@ -1260,15 +1260,29 @@ function renderScores() {
   const teamScores = room.draftOrder.map(team => {
     const players = (room.picks[team] || []).map(name => ({ ...findPlayerScore(name), name }));
 
-    // Apply missed cut rule
+    // Apply missed cut rule: project Sat/Sun as average of Thu/Fri rounds
     if (room.cutRule === 'freeze') {
-      const activePlayers = players.filter(p => p.status !== 'cut');
-      const worstActive = activePlayers.length > 0 ? Math.max(...activePlayers.map(p => p.toPar)) : null;
       players.forEach(p => {
-        if (p.status === 'cut' && worstActive !== null && worstActive > p.toPar) {
-          p.toPar = worstActive;
-          p.toParDisplay = worstActive === 0 ? 'E' : (worstActive > 0 ? '+' + worstActive : '' + worstActive);
-          p.cutAdjusted = true;
+        if (p.status === 'cut') {
+          const rounds = p.rounds || [];
+          // Parse Thu (R1) and Fri (R2) to-par values
+          const r1 = parseRoundToPar(rounds[0]);
+          const r2 = parseRoundToPar(rounds[1]);
+          if (r1 !== null || r2 !== null) {
+            const validRounds = [r1, r2].filter(v => v !== null);
+            const avg = validRounds.reduce((a, b) => a + b, 0) / validRounds.length;
+            const projRound = Math.round(avg);
+            const projDisplay = projRound === 0 ? 'E' : (projRound > 0 ? '+' + projRound : '' + projRound);
+            // Add projected R3 and R4 to rounds display
+            if (rounds.length < 3 || rounds[2] === '--') rounds[2] = projDisplay + '*';
+            if (rounds.length < 4 || rounds[3] === '--') rounds[3] = projDisplay + '*';
+            p.rounds = rounds;
+            // Update total: actual Thu+Fri plus 2x projected
+            const actualToPar = (r1 || 0) + (r2 || 0);
+            p.toPar = actualToPar + (projRound * 2);
+            p.toParDisplay = p.toPar === 0 ? 'E' : (p.toPar > 0 ? '+' + p.toPar : '' + p.toPar);
+            p.cutAdjusted = true;
+          }
         }
       });
     }
