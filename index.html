@@ -1260,9 +1260,10 @@ function renderScores() {
   // Calculate field average per round (for cut player floor)
   function calcFieldRoundAvg(roundIdx) {
     const vals = Object.values(scoreData)
+      .filter(p => p.status !== 'cut') // only players who made the cut
       .map(p => parseRoundToPar((p.rounds || [])[roundIdx]))
       .filter(v => v !== null);
-    if (vals.length === 0) return 0;
+    if (vals.length === 0) return null;
     return vals.reduce((a, b) => a + b, 0) / vals.length;
   }
   const fieldAvgR3 = calcFieldRoundAvg(2);
@@ -1271,8 +1272,7 @@ function renderScores() {
   const teamScores = room.draftOrder.map(team => {
     const players = (room.picks[team] || []).map(name => ({ ...findPlayerScore(name), name }));
 
-    // Apply missed cut rule: project Sat/Sun as average of Thu/Fri rounds
-    // If field avg + 2 is worse, use that instead
+    // Missed cut rule: default to Thu/Fri avg, but if field avg is higher, use field avg
     if (room.cutRule === 'freeze') {
       players.forEach(p => {
         if (p.status === 'cut') {
@@ -1281,14 +1281,12 @@ function renderScores() {
           const r2 = parseRoundToPar(rounds[1]);
           if (r1 !== null || r2 !== null) {
             const validRounds = [r1, r2].filter(v => v !== null);
-            const playerAvg = validRounds.reduce((a, b) => a + b, 0) / validRounds.length;
+            const playerAvg = Math.round(validRounds.reduce((a, b) => a + b, 0) / validRounds.length);
 
-            // R3 projection: max of player avg and field avg + 2
-            const fieldFloorR3 = Math.round(fieldAvgR3) + 2;
-            const projR3 = Math.max(Math.round(playerAvg), fieldFloorR3);
-            // R4 projection: same logic
-            const fieldFloorR4 = Math.round(fieldAvgR4) + 2;
-            const projR4 = Math.max(Math.round(playerAvg), fieldFloorR4);
+            // R3: default to player avg, use field avg if field played worse
+            const projR3 = fieldAvgR3 !== null ? Math.max(playerAvg, Math.round(fieldAvgR3)) : playerAvg;
+            // R4: default to player avg, use field avg if field played worse (updates live as R4 scores come in)
+            const projR4 = fieldAvgR4 !== null ? Math.max(playerAvg, Math.round(fieldAvgR4)) : playerAvg;
 
             function fmtProj(v) { return (v === 0 ? 'E' : (v > 0 ? '+' + v : '' + v)) + '*'; }
             if (rounds.length < 3 || rounds[2] === '--') rounds[2] = fmtProj(projR3);
