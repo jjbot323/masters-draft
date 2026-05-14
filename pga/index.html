@@ -837,15 +837,19 @@ function loadCompareRooms() {
   });
 }
 
-// Lookup live score for a player (handles minor name normalization). Returns null if not found.
+// Lookup live score for a player. Reuses findPlayerScore (defined below) which already
+// handles accents, case, and last-name + first-initial fuzzy matching.
 function lookupCompareScore(scores, name) {
-  if (!scores) return null;
-  if (scores[name]) return scores[name];
-  // Fall back to case-insensitive
-  const lower = name.toLowerCase();
-  for (const k in scores) {
-    if (k.toLowerCase() === lower) return scores[k];
-  }
+  if (!scores || Object.keys(scores).length === 0) return null;
+  // Try mojibake-repaired variant first (handles old Firebase data written with bad encoding)
+  let candidate = name;
+  try {
+    const repaired = decodeURIComponent(escape(name));
+    if (repaired !== name && scores[repaired]) candidate = repaired;
+  } catch (_) {}
+  const result = findPlayerScore(candidate);
+  // findPlayerScore returns a placeholder { status: 'unknown' } when not found
+  if (result && result.status !== 'unknown') return result;
   return null;
 }
 
