@@ -1630,11 +1630,15 @@ function renderScores() {
       <th style="text-align:center; padding:6px 8px;">Tot</th>
     </tr></thead><tbody>`;
 
+  window._collapsedTeams = window._collapsedTeams || new Set();
   teamScores.forEach((ts, i) => {
     const sc = ts.totalToPar < 0 ? 'under' : (ts.totalToPar > 0 ? 'over' : 'even');
+    const collapsed = window._collapsedTeams.has(ts.team);
+    const arrow = collapsed ? '&#9654;' : '&#9660;';
+    const headerBg = collapsed ? '' : 'background:var(--pga-cream);';
 
-    html += `<tr class="team-row" style="cursor:pointer;" onclick="window.toggleTeamExpand('team-expand-${i}', this)">
-      <td style="text-align:center; font-size:0.6rem; color:var(--text-light); padding:6px 2px;" id="arrow-${i}">&#9654;</td>
+    html += `<tr class="team-row" style="cursor:pointer; ${headerBg}" data-team="${escapeHtml(ts.team)}" onclick="window.toggleTeamExpand('team-expand-${i}', this, this.dataset.team)">
+      <td style="text-align:center; font-size:0.6rem; color:var(--text-light); padding:6px 2px;" id="arrow-${i}">${arrow}</td>
       <td style="text-align:left; padding:6px 8px;"><strong>${ts.team}</strong></td>
       ${ts.roundTotals.map(rt => `<td style="text-align:center; padding:6px 4px;"><span class="score ${roundTotalClass(rt)}">${formatRoundTotal(rt)}</span></td>`).join('')}
       <td style="text-align:center; padding:6px 8px;"><span class="score ${sc}" style="font-weight:bold;">${ts.totalDisplay}</span></td>
@@ -1660,7 +1664,8 @@ function renderScores() {
       const rowBg = p.status === 'cut' ? 'background:#fdf0f0; border-left:3px solid #dc3545;' :
                    p.status === 'unknown' ? 'background:#fff3cd; border-left:3px solid #ffc107;' :
                    'background:#fafafa;';
-      html += `<tr class="team-expand-row team-expand-${i}" style="display:none; ${opacity} ${rowBg}">
+      const expandDisplay = collapsed ? 'none' : 'table-row';
+      html += `<tr class="team-expand-row team-expand-${i}" style="display:${expandDisplay}; ${opacity} ${rowBg}">
         <td style="padding:4px 2px;"></td>
         <td style="text-align:left; padding:4px 8px 4px 16px; white-space:nowrap; font-size:0.75rem;">
           ${p.name}${!isCounting ? ' <span style="color:var(--text-light);">(B)</span>' : ''}${adjLabel}
@@ -1697,7 +1702,7 @@ window.toggleTeamCard = function(id) {
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 };
 
-window.toggleTeamExpand = function(cls, row) {
+window.toggleTeamExpand = function(cls, row, teamName) {
   const rows = document.querySelectorAll('.' + cls);
   const isOpen = rows.length > 0 && rows[0].style.display !== 'none';
   rows.forEach(r => r.style.display = isOpen ? 'none' : 'table-row');
@@ -1705,6 +1710,12 @@ window.toggleTeamExpand = function(cls, row) {
   const idx = cls.replace('team-expand-', '');
   const arrow = document.getElementById('arrow-' + idx);
   if (arrow) arrow.innerHTML = isOpen ? '&#9654;' : '&#9660;';
+  // Persist collapse state across re-renders
+  window._collapsedTeams = window._collapsedTeams || new Set();
+  if (teamName) {
+    if (isOpen) window._collapsedTeams.add(teamName);
+    else window._collapsedTeams.delete(teamName);
+  }
 };
 
 let scoreInterval = null;
