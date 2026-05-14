@@ -385,13 +385,14 @@ header .subtitle { color: var(--pga-gold); font-style: italic; font-size: 1.05re
 
   <!-- COMPARE (read-only side-by-side) -->
   <div class="phase" id="phase-compare">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
       <h2 style="margin:0;">Pool Comparison</h2>
       <div>
         <button class="btn btn-outline" onclick="refreshCompare()" style="font-size:0.85rem;">&#x21bb; Refresh</button>
         <button class="btn btn-outline" onclick="leaveCompare()" style="font-size:0.85rem;">&larr; Back</button>
       </div>
     </div>
+    <div id="compare-last-update" style="font-size:0.78rem; color:var(--text-light); margin-bottom:12px; font-style:italic;">Loading live scores...</div>
     <div id="compare-container" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
       <div id="compare-pane-1" class="compare-pane"></div>
       <div id="compare-pane-2" class="compare-pane"></div>
@@ -794,17 +795,22 @@ window.openCompare = function() {
   hideCompare();
   switchPhase('compare');
   loadCompareRooms();
+  startScoreRefresh();
 };
 
 window.leaveCompare = function() {
   compareUnsubs.forEach(u => { try { u(); } catch (_) {} });
   compareUnsubs = [];
   compareCodes = [];
+  if (scoreInterval) { clearInterval(scoreInterval); scoreInterval = null; }
   switchPhase('landing');
 };
 
 window.refreshCompare = function() {
-  if (compareCodes.length === 2) loadCompareRooms();
+  if (compareCodes.length === 2) {
+    loadCompareRooms();
+    fetchScores();
+  }
 };
 
 function loadCompareRooms() {
@@ -831,12 +837,30 @@ function loadCompareRooms() {
   });
 }
 
+// Lookup live score for a player (handles minor name normalization). Returns null if not found.
+function lookupCompareScore(scores, name) {
+  if (!scores) return null;
+  if (scores[name]) return scores[name];
+  // Fall back to case-insensitive
+  const lower = name.toLowerCase();
+  for (const k in scores) {
+    if (k.toLowerCase() === lower) return scores[k];
+  }
+  return null;
+}
+
+function fmtToPar(v) {
+  if (v === 0) return 'E';
+  return v > 0 ? '+' + v : '' + v;
+}
+
 function renderComparePane(pane, code, data) {
   const teams = objToArray(data.teams);
   const picks = picksObjToMap(data.picks);
   const phase = data.phase || 'setup';
-  // Get scores if available - use cached score lookup
-  const scoresMap = window._lastPlayerScores || null;
+  const scoringType = data.config?.scoringType || 'all';
+  const scores = window._lastScoreData || null;
+  const hasScores = scores && Object.keys(scores).length > 0;
 
   let html = '';
   html += '<div class="room-header">';
@@ -850,38 +874,59 @@ function renderComparePane(pane, code, data) {
     return;
   }
 
-  // Sort teams by total score if scores available, else by team order
+  // Build team rows with live scoring
   const teamRows = teams.map(t => {
-    const teamPicks = picks[t] || [];
-    let total = 0;
-    let scoredCount = 0;
-    const pickRows = teamPicks.map(name => {
-      let scoreText = '';
-      if (scoresMap && scoresMap[name] != null) {
-        const s = scoresMap[name];
-        total += s;
-        scoredCount++;
-        scoreText = (s > 0 ? '+' : '') + s;
-      }
-      return { name, scoreText };
+    const teamPicks = (picks[t] || []).map(name => {
+      const sd = lookupCompareScore(scores, name);
+      return {
+        name,
+        toPar: sd ? sd.toPar : 0,
+        toParDisplay: sd ? sd.toParDisplay : '--',
+        position: sd ? sd.position : '--',
+        status: sd ? sd.status : 'tee',
+        thru: sd ? sd.thru : '--',
+        hasScore: !!sd,
+      };
     });
-    return { team: t, picks: pickRows, total, scoredCount };
+    // Sort within team by to-par (lowest = best at top)
+    if (hasScores) teamPicks.sort((a, b) => (a.hasScore ? a.toPar : 999) - (b.hasScore ? b.toPar : 999));
+    // Apply scoringType: best-N players count
+    let counting = teamPicks;
+    if (scoringType === 'best4') counting = teamPicks.slice(0, 4);
+    else if (scoringType === 'best3') counting = teamPicks.slice(0, 3);
+    const total = counting.filter(p => p.hasScore).reduce((s, p) => s + p.toPar, 0);
+    const countedScored = counting.filter(p => p.hasScore).length;
+    return { team: t, picks: teamPicks, counting, total, countedScored };
   });
+  if (hasScores) teamRows.sort((a, b) => a.total - b.total);
 
-  if (scoresMap) {
-    teamRows.sort((a, b) => a.total - b.total);
-  }
-
-  teamRows.forEach(tr => {
+  // Compute leader for per-team coloring
+  teamRows.forEach((tr, idx) => {
     html += '<div class="team-block">';
-    html += '<div class="team-name">' + escapeHtml(tr.team) + '</div>';
+    html += '<div class="team-name">';
+    if (hasScores && tr.countedScored > 0) html += '<span style="color:var(--pga-gold);margin-right:6px;">' + (idx + 1) + '.</span>';
+    html += escapeHtml(tr.team) + '</div>';
     tr.picks.forEach(p => {
-      html += '<div class="team-pick"><span>' + escapeHtml(p.name) + '</span>';
-      if (p.scoreText) html += '<span class="player-score">' + p.scoreText + '</span>';
+      const inCount = tr.counting.includes(p);
+      const dim = !inCount && scoringType !== 'all' ? 'opacity:0.45;' : '';
+      const cutBadge = p.status === 'cut' ? ' <span style="color:var(--red); font-size:0.7rem; margin-left:4px;">CUT</span>' : '';
+      const tparCls = p.hasScore ? (p.toPar < 0 ? 'under' : (p.toPar > 0 ? 'over' : 'even')) : '';
+      const tparStyle = tparCls === 'under' ? 'color:var(--red);' :
+                       (tparCls === 'over' ? 'color:var(--text);' : 'color:var(--text-light);');
+      html += '<div class="team-pick" style="' + dim + '">';
+      html += '<span>' + escapeHtml(p.name) + cutBadge + '</span>';
+      if (p.hasScore) {
+        html += '<span class="player-score"><span style="' + tparStyle + 'font-weight:600;">' + escapeHtml(p.toParDisplay) + '</span>';
+        if (p.position && p.position !== '--') html += ' <span style="color:var(--text-light);">' + escapeHtml(p.position) + '</span>';
+        html += '</span>';
+      } else {
+        html += '<span class="player-score">--</span>';
+      }
       html += '</div>';
     });
-    if (scoresMap && tr.scoredCount > 0) {
-      html += '<div class="team-total"><span>Total</span><strong>' + (tr.total > 0 ? '+' : '') + tr.total + '</strong></div>';
+    if (hasScores && tr.countedScored > 0) {
+      const totalStyle = tr.total < 0 ? 'color:var(--red);' : (tr.total > 0 ? 'color:var(--text);' : '');
+      html += '<div class="team-total"><span>Team total</span><strong style="' + totalStyle + '">' + fmtToPar(tr.total) + '</strong></div>';
     }
     html += '</div>';
   });
@@ -1383,21 +1428,22 @@ async function fetchScores() {
       };
     });
 
-    // Expose simplified score map for compare view: { playerName: toPar }
-    const exposed = {};
-    Object.entries(scoreData).forEach(([n, d]) => { exposed[n] = d.toPar; });
-    window._lastPlayerScores = exposed;
+    // Expose full score data for compare view
+    window._lastScoreData = scoreData;
+    window._lastScoreUpdate = Date.now();
 
     document.getElementById('last-update').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
     renderScores();
-    // If compare view is active, refresh it too
+    // If compare view is active, refresh both panes with new scores
     if (currentPhase === 'compare' && compareCodes.length === 2) {
       compareCodes.forEach((code, idx) => {
         const pane = document.getElementById('compare-pane-' + (idx + 1));
         if (pane && pane._lastData) renderComparePane(pane, code, pane._lastData);
       });
+      const upd = document.getElementById('compare-last-update');
+      if (upd) upd.textContent = 'Live · updated ' + new Date().toLocaleTimeString();
     }
-    showToast('Scores updated!');
+    if (currentPhase === 'scores') showToast('Scores updated!');
   } catch (err) {
     console.error(err);
     showToast('Could not fetch live scores. Using demo data.');
@@ -1730,6 +1776,7 @@ function checkURLParams() {
       compareCodes = [codes[0], codes[1]];
       switchPhase('compare');
       loadCompareRooms();
+      startScoreRefresh();
       return;
     }
   }
