@@ -239,6 +239,43 @@ header .subtitle { color: var(--pga-gold); font-style: italic; font-size: 1.05re
 #join-form { display: none; margin-top: 16px; }
 #join-form input { margin-bottom: 8px; }
 
+/* Compare panes */
+.compare-pane {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px; min-height: 200px;
+}
+.compare-pane .room-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 2px solid var(--pga-gold); padding-bottom: 6px; margin-bottom: 10px;
+}
+.compare-pane .room-code {
+  font-family: 'Courier New', monospace; font-weight: bold;
+  font-size: 1.2rem; color: var(--pga-navy); letter-spacing: 2px;
+}
+.compare-pane .phase-pill {
+  font-size: 0.7rem; padding: 2px 8px; border-radius: 10px;
+  background: var(--pga-cream); color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;
+}
+.compare-pane .team-block {
+  margin-bottom: 12px; padding: 8px 10px; background: var(--pga-cream); border-radius: 6px;
+}
+.compare-pane .team-name { font-weight: bold; color: var(--pga-navy); margin-bottom: 4px; font-size: 0.95rem; }
+.compare-pane .team-pick {
+  font-size: 0.85rem; padding: 2px 0; display: flex; justify-content: space-between; gap: 6px;
+}
+.compare-pane .team-pick .player-score {
+  color: var(--text-light); font-variant-numeric: tabular-nums; font-size: 0.8rem;
+}
+.compare-pane .team-total {
+  border-top: 1px dashed var(--border); margin-top: 4px; padding-top: 4px;
+  font-size: 0.85rem; display: flex; justify-content: space-between;
+}
+.compare-pane .team-total strong { color: var(--pga-navy); }
+.compare-pane .empty-state { color: var(--text-light); font-style: italic; padding: 20px; text-align: center; }
+@media (max-width: 768px) {
+  #compare-container { grid-template-columns: 1fr !important; }
+}
+
 /* Toast */
 .toast {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -300,6 +337,10 @@ header .subtitle { color: var(--pga-gold); font-style: italic; font-size: 1.05re
             <div class="icon">&#x1F517;</div>
             <div><div class="label">Join Draft or Pool</div></div>
           </button>
+          <button class="landing-btn" onclick="showCompare()">
+            <div class="icon">&#x1F441;</div>
+            <div><div class="label">Compare Rooms</div><div class="desc" style="font-size:0.8rem; color:var(--text-light);">View two pools side-by-side (read-only)</div></div>
+          </button>
         </div>
 
         <div id="join-form">
@@ -319,7 +360,41 @@ header .subtitle { color: var(--pga-gold); font-style: italic; font-size: 1.05re
             </div>
           </div>
         </div>
+
+        <div id="compare-form" style="display:none;">
+          <div class="card">
+            <h2>Compare Rooms</h2>
+            <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:12px;">View both pools side-by-side. Read-only - no need to join.</p>
+            <div class="form-row">
+              <label>Room Code 1</label>
+              <input type="text" id="cmp-code-1" maxlength="4" placeholder="ABCD" style="text-transform:uppercase; letter-spacing:4px; text-align:center; font-size:1.3rem;">
+            </div>
+            <div class="form-row">
+              <label>Room Code 2</label>
+              <input type="text" id="cmp-code-2" maxlength="4" placeholder="EFGH" style="text-transform:uppercase; letter-spacing:4px; text-align:center; font-size:1.3rem;">
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="openCompare()">View Both</button>
+              <button class="btn btn-outline" onclick="hideCompare()">Cancel</button>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- COMPARE (read-only side-by-side) -->
+  <div class="phase" id="phase-compare">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <h2 style="margin:0;">Pool Comparison</h2>
+      <div>
+        <button class="btn btn-outline" onclick="refreshCompare()" style="font-size:0.85rem;">&#x21bb; Refresh</button>
+        <button class="btn btn-outline" onclick="leaveCompare()" style="font-size:0.85rem;">&larr; Back</button>
+      </div>
+    </div>
+    <div id="compare-container" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div id="compare-pane-1" class="compare-pane"></div>
+      <div id="compare-pane-2" class="compare-pane"></div>
     </div>
   </div>
 
@@ -691,11 +766,132 @@ window.showCreate = function() {
 
 window.showJoin = function() {
   document.getElementById('join-form').style.display = 'block';
+  document.getElementById('compare-form').style.display = 'none';
 };
 
 window.hideJoin = function() {
   document.getElementById('join-form').style.display = 'none';
 };
+
+window.showCompare = function() {
+  document.getElementById('compare-form').style.display = 'block';
+  document.getElementById('join-form').style.display = 'none';
+};
+
+window.hideCompare = function() {
+  document.getElementById('compare-form').style.display = 'none';
+};
+
+let compareUnsubs = [];
+let compareCodes = [];
+
+window.openCompare = function() {
+  const c1 = document.getElementById('cmp-code-1').value.trim().toUpperCase();
+  const c2 = document.getElementById('cmp-code-2').value.trim().toUpperCase();
+  if (!c1 || c1.length < 4) { showToast('Enter Room Code 1'); return; }
+  if (!c2 || c2.length < 4) { showToast('Enter Room Code 2'); return; }
+  compareCodes = [c1, c2];
+  hideCompare();
+  switchPhase('compare');
+  loadCompareRooms();
+};
+
+window.leaveCompare = function() {
+  compareUnsubs.forEach(u => { try { u(); } catch (_) {} });
+  compareUnsubs = [];
+  compareCodes = [];
+  switchPhase('landing');
+};
+
+window.refreshCompare = function() {
+  if (compareCodes.length === 2) loadCompareRooms();
+};
+
+function loadCompareRooms() {
+  compareUnsubs.forEach(u => { try { u(); } catch (_) {} });
+  compareUnsubs = [];
+  compareCodes.forEach((code, idx) => {
+    const paneId = 'compare-pane-' + (idx + 1);
+    const pane = document.getElementById(paneId);
+    pane.innerHTML = '<div class="empty-state">Loading room ' + code + '...</div>';
+    const rRef = ref(db, ROOMS_PATH + '/' + code);
+    const unsub = onValue(rRef, (snap) => {
+      if (!snap.exists()) {
+        pane.innerHTML = '<div class="empty-state">Room <strong>' + code + '</strong> not found.</div>';
+        pane._lastData = null;
+        return;
+      }
+      pane._lastData = snap.val();
+      renderComparePane(pane, code, pane._lastData);
+    }, (err) => {
+      console.error('Compare load failed:', err);
+      pane.innerHTML = '<div class="empty-state">Error loading ' + code + ': ' + err.message + '</div>';
+    });
+    compareUnsubs.push(unsub);
+  });
+}
+
+function renderComparePane(pane, code, data) {
+  const teams = objToArray(data.teams);
+  const picks = picksObjToMap(data.picks);
+  const phase = data.phase || 'setup';
+  // Get scores if available - use cached score lookup
+  const scoresMap = window._lastPlayerScores || null;
+
+  let html = '';
+  html += '<div class="room-header">';
+  html += '<span class="room-code">' + code + '</span>';
+  html += '<span class="phase-pill">' + phase + '</span>';
+  html += '</div>';
+
+  if (!teams.length) {
+    html += '<div class="empty-state">No teams yet (setup in progress).</div>';
+    pane.innerHTML = html;
+    return;
+  }
+
+  // Sort teams by total score if scores available, else by team order
+  const teamRows = teams.map(t => {
+    const teamPicks = picks[t] || [];
+    let total = 0;
+    let scoredCount = 0;
+    const pickRows = teamPicks.map(name => {
+      let scoreText = '';
+      if (scoresMap && scoresMap[name] != null) {
+        const s = scoresMap[name];
+        total += s;
+        scoredCount++;
+        scoreText = (s > 0 ? '+' : '') + s;
+      }
+      return { name, scoreText };
+    });
+    return { team: t, picks: pickRows, total, scoredCount };
+  });
+
+  if (scoresMap) {
+    teamRows.sort((a, b) => a.total - b.total);
+  }
+
+  teamRows.forEach(tr => {
+    html += '<div class="team-block">';
+    html += '<div class="team-name">' + escapeHtml(tr.team) + '</div>';
+    tr.picks.forEach(p => {
+      html += '<div class="team-pick"><span>' + escapeHtml(p.name) + '</span>';
+      if (p.scoreText) html += '<span class="player-score">' + p.scoreText + '</span>';
+      html += '</div>';
+    });
+    if (scoresMap && tr.scoredCount > 0) {
+      html += '<div class="team-total"><span>Total</span><strong>' + (tr.total > 0 ? '+' : '') + tr.total + '</strong></div>';
+    }
+    html += '</div>';
+  });
+
+  pane.innerHTML = html;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
 window.joinRoom = function() {
   const code = document.getElementById('join-code').value.trim().toUpperCase();
@@ -1187,8 +1383,20 @@ async function fetchScores() {
       };
     });
 
+    // Expose simplified score map for compare view: { playerName: toPar }
+    const exposed = {};
+    Object.entries(scoreData).forEach(([n, d]) => { exposed[n] = d.toPar; });
+    window._lastPlayerScores = exposed;
+
     document.getElementById('last-update').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
     renderScores();
+    // If compare view is active, refresh it too
+    if (currentPhase === 'compare' && compareCodes.length === 2) {
+      compareCodes.forEach((code, idx) => {
+        const pane = document.getElementById('compare-pane-' + (idx + 1));
+        if (pane && pane._lastData) renderComparePane(pane, code, pane._lastData);
+      });
+    }
     showToast('Scores updated!');
   } catch (err) {
     console.error(err);
@@ -1469,11 +1677,13 @@ function switchPhase(phase) {
   document.getElementById(`phase-${phase}`).classList.add('active');
 
   const tabs = document.getElementById('phase-tabs');
-  if (phase !== 'landing' && phase !== 'lobby') {
+  if (phase !== 'landing' && phase !== 'lobby' && phase !== 'compare') {
     tabs.style.display = 'flex';
     tabs.querySelectorAll('.phase-tab').forEach(t => {
       t.classList.toggle('active', t.dataset.phase === phase);
     });
+  } else {
+    tabs.style.display = 'none';
   }
 
   if (phase === 'scores') {
@@ -1511,6 +1721,18 @@ window.renderPlayerGrid = renderPlayerGrid;
 function checkURLParams() {
   const params = new URLSearchParams(window.location.search);
   const roomParam = params.get('room');
+  const compareParam = params.get('compare');
+  if (compareParam) {
+    const codes = compareParam.toUpperCase().split(',').map(c => c.trim()).filter(c => c.length >= 4);
+    if (codes.length >= 2) {
+      document.getElementById('cmp-code-1').value = codes[0];
+      document.getElementById('cmp-code-2').value = codes[1];
+      compareCodes = [codes[0], codes[1]];
+      switchPhase('compare');
+      loadCompareRooms();
+      return;
+    }
+  }
   if (roomParam) {
     document.getElementById('join-code').value = roomParam.toUpperCase();
     showJoin();
