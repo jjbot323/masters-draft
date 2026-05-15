@@ -858,13 +858,49 @@ function fmtToPar(v) {
   return v > 0 ? '+' + v : '' + v;
 }
 
+// Compute field-average to-par per round (excludes cut players). Returns {r3, r4} or nulls.
+function computeCompareFieldAvgs(scores) {
+  function avg(roundIdx) {
+    const vals = Object.values(scores)
+      .filter(p => p && p.status !== 'cut')
+      .map(p => parseRoundToPar((p.rounds || [])[roundIdx]))
+      .filter(v => v !== null);
+    if (vals.length === 0) return null;
+    return vals.reduce((a, b) => a + b, 0) / vals.length;
+  }
+  return { r3: avg(2), r4: avg(3) };
+}
+
+// Apply cut-freeze projection: player's own Thu/Fri pace, or field avg + 2 if field plays worse.
+// Returns { toPar, toParDisplay } reflecting the full-tournament projection.
+function applyCutFreeze(sd, fieldAvgs) {
+  const rounds = sd.rounds || [];
+  const r1 = parseRoundToPar(rounds[0]);
+  const r2 = parseRoundToPar(rounds[1]);
+  if (r1 === null && r2 === null) return { toPar: sd.toPar, toParDisplay: sd.toParDisplay };
+  const validRounds = [r1, r2].filter(v => v !== null);
+  const playerAvg = Math.round(validRounds.reduce((a, b) => a + b, 0) / validRounds.length);
+  const projR3 = fieldAvgs.r3 !== null
+    ? Math.max(playerAvg, Math.round(fieldAvgs.r3) + 2) : playerAvg;
+  const projR4 = fieldAvgs.r4 !== null
+    ? Math.max(playerAvg, Math.round(fieldAvgs.r4) + 2) : playerAvg;
+  const actual = (r1 || 0) + (r2 || 0);
+  const total = actual + projR3 + projR4;
+  return {
+    toPar: total,
+    toParDisplay: (total === 0 ? 'E' : (total > 0 ? '+' + total : '' + total)) + '*',
+  };
+}
+
 function renderComparePane(pane, code, data) {
   const teams = objToArray(data.teams);
   const picks = picksObjToMap(data.picks);
   const phase = data.phase || 'setup';
   const scoringType = data.config?.scoringType || 'all';
+  const cutRule = data.config?.cutRule || 'freeze';
   const scores = window._lastScoreData || null;
   const hasScores = scores && Object.keys(scores).length > 0;
+  const fieldAvgs = hasScores ? computeCompareFieldAvgs(scores) : { r3: null, r4: null };
 
   let html = '';
   html += '<div class="room-header">';
@@ -882,14 +918,24 @@ function renderComparePane(pane, code, data) {
   const teamRows = teams.map(t => {
     const teamPicks = (picks[t] || []).map(name => {
       const sd = lookupCompareScore(scores, name);
+      let toPar = sd ? sd.toPar : 0;
+      let toParDisplay = sd ? sd.toParDisplay : '--';
+      let cutAdjusted = false;
+      if (sd && sd.status === 'cut' && cutRule === 'freeze') {
+        const frozen = applyCutFreeze(sd, fieldAvgs);
+        toPar = frozen.toPar;
+        toParDisplay = frozen.toParDisplay;
+        cutAdjusted = true;
+      }
       return {
         name,
-        toPar: sd ? sd.toPar : 0,
-        toParDisplay: sd ? sd.toParDisplay : '--',
+        toPar,
+        toParDisplay,
         position: sd ? sd.position : '--',
         status: sd ? sd.status : 'tee',
         thru: sd ? sd.thru : '--',
         hasScore: !!sd,
+        cutAdjusted,
       };
     });
     // Sort within team by to-par (lowest = best at top)
@@ -913,7 +959,7 @@ function renderComparePane(pane, code, data) {
     tr.picks.forEach(p => {
       const inCount = tr.counting.includes(p);
       const dim = !inCount && scoringType !== 'all' ? 'opacity:0.45;' : '';
-      const cutBadge = p.status === 'cut' ? ' <span style="color:var(--red); font-size:0.7rem; margin-left:4px;">CUT</span>' : '';
+      const cutBadge = p.status === 'cut' ? ' <span style="background:var(--red); color:white; font-size:0.65rem; padding:1px 5px; border-radius:3px; margin-left:4px; letter-spacing:0.5px;">MISSED CUT</span>' : '';
       const tparCls = p.hasScore ? (p.toPar < 0 ? 'under' : (p.toPar > 0 ? 'over' : 'even')) : '';
       const tparStyle = tparCls === 'under' ? 'color:var(--red);' :
                        (tparCls === 'over' ? 'color:var(--text);' : 'color:var(--text-light);');
@@ -921,7 +967,7 @@ function renderComparePane(pane, code, data) {
       html += '<span>' + escapeHtml(p.name) + cutBadge + '</span>';
       if (p.hasScore) {
         html += '<span class="player-score"><span style="' + tparStyle + 'font-weight:600;">' + escapeHtml(p.toParDisplay) + '</span>';
-        if (p.position && p.position !== '--') html += ' <span style="color:var(--text-light);">' + escapeHtml(p.position) + '</span>';
+        if (p.position && p.position !== '--' && !p.cutAdjusted) html += ' <span style="color:var(--text-light);">' + escapeHtml(p.position) + '</span>';
         html += '</span>';
       } else {
         html += '<span class="player-score">--</span>';
@@ -934,6 +980,12 @@ function renderComparePane(pane, code, data) {
     }
     html += '</div>';
   });
+
+  // Footer note if any cut-frozen projections shown
+  const anyCutAdjusted = teamRows.some(tr => tr.picks.some(p => p.cutAdjusted));
+  if (anyCutAdjusted) {
+    html += '<div style="font-size:0.7rem; color:var(--text-light); font-style:italic; margin-top:8px; text-align:center;">* projected weekend rounds for missed-cut players</div>';
+  }
 
   pane.innerHTML = html;
 }
@@ -1562,8 +1614,9 @@ function renderScores() {
             const validRounds = [r1, r2].filter(v => v !== null);
             const playerAvg = Math.round(validRounds.reduce((a, b) => a + b, 0) / validRounds.length);
 
-            const projR3 = fieldAvgR3 !== null ? Math.max(playerAvg, Math.round(fieldAvgR3)) : playerAvg;
-            const projR4 = fieldAvgR4 !== null ? Math.max(playerAvg, Math.round(fieldAvgR4)) : playerAvg;
+            // Project weekend rounds: player's own pace, OR field avg + 2 if field plays worse
+            const projR3 = fieldAvgR3 !== null ? Math.max(playerAvg, Math.round(fieldAvgR3) + 2) : playerAvg;
+            const projR4 = fieldAvgR4 !== null ? Math.max(playerAvg, Math.round(fieldAvgR4) + 2) : playerAvg;
 
             function fmtProj(v) { return (v === 0 ? 'E' : (v > 0 ? '+' + v : '' + v)) + '*'; }
             function isBlank(v) { return !v || v === '--' || v === '-'; }
@@ -1657,7 +1710,7 @@ function renderScores() {
       if (p.status === 'unknown') {
         statusHtml = '<span class="status-badge status-cut">NOT IN FIELD</span>';
       } else if (p.status === 'cut') {
-        statusHtml = '<span class="status-badge status-cut">CUT</span>';
+        statusHtml = '<span class="status-badge status-cut">MISSED CUT</span>';
       } else if (p.status === 'tee' && p.teeTime) {
         statusHtml = `<span style="color:var(--text-light);">${p.teeTime}</span>`;
       } else if (p.thru && p.thru !== '--') {
