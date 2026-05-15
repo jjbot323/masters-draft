@@ -1416,9 +1416,8 @@ async function fetchScores() {
       const holesPlayed = c.linescores?.[0]?.linescores?.length || 0;
       const espnCut = c.status?.type?.description === 'cut';
       const scoreToPar = parseToPar(toPar);
-      const hasR2 = rounds.length >= 2 && rounds[1] && rounds[1] !== '--' && rounds[1] !== '-';
-      const hasR3 = rounds.length >= 3 && rounds[2] && rounds[2] !== '--' && rounds[2] !== '-';
-      const isCut = espnCut || (hasR2 && !hasR3 && scoreToPar > 4);
+      // Only trust ESPN's official cut flag - don't pre-mark players during R2 in progress
+      const isCut = espnCut;
       const thruVal = c.status?.thru || c.status?.type?.shortDetail || '--';
 
       scoreData[name] = {
