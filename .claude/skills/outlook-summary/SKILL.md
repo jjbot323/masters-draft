@@ -1,5 +1,5 @@
 ---
-name: email-summary
+name: outlook-summary
 description: Read Josh's Outlook emails from the last 7 days via the Microsoft Graph API and produce a weekly summary of active situations and action items, grouped by portfolio company then by category. Use when asked for an email summary, weekly inbox digest, or "what happened in my email this week".
 ---
 
