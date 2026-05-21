@@ -107,14 +107,28 @@ def cmd_send(token, subject):
     print("Sent to " + address, file=sys.stderr)
 
 
+def cmd_scopes(token):
+    import base64
+    payload = token.split(".")[1]
+    payload += "=" * (-len(payload) % 4)
+    claims = json.loads(base64.urlsafe_b64decode(payload))
+    scopes = claims.get("scp", "").split()
+    print("Granted scopes: " + (" ".join(scopes) or "(none)"))
+    for need in ("Mail.Read", "Mail.Send"):
+        ok = need in scopes or "Mail.ReadWrite" in scopes
+        print(("  OK   " if ok else "  MISSING ") + need)
+
+
 def main():
     args = sys.argv[1:]
     if not args:
-        sys.exit("usage: graph_client.py {fetch|send --subject ...}")
+        sys.exit("usage: graph_client.py {fetch|send --subject ...|scopes}")
     token = get_access_token()
     cmd = args[0]
     if cmd == "fetch":
         cmd_fetch(token)
+    elif cmd == "scopes":
+        cmd_scopes(token)
     elif cmd == "send":
         subject = "Weekly Email Summary"
         if "--subject" in args:
