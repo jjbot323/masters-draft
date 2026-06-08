@@ -587,45 +587,62 @@ const ROOMS_PATH = 'rooms/pga';
 
 // ========================================
 // PGA CHAMPIONSHIP FIELD (2026, Aronimink)
-// Approximate field of 156. Ranking is rough draft order.
+// Ordered by outright odds (favorite first).
 // ========================================
 const PGA_FIELD = [
-  // Top contenders
-  "Scottie Scheffler","Rory McIlroy","Xander Schauffele","Bryson DeChambeau",
-  "Ludvig Aberg","Jon Rahm","Collin Morikawa","Cameron Young",
-  "Justin Thomas","Viktor Hovland","Tommy Fleetwood","Hideki Matsuyama",
-  "Patrick Cantlay","Shane Lowry","Tyrrell Hatton","Russell Henley",
-  "Matt Fitzpatrick","Sepp Straka","Corey Conners","Sam Burns",
-  "Keegan Bradley","Robert MacIntyre","Joaquin Niemann","Brooks Koepka",
-  "Wyndham Clark","Jordan Spieth","Sungjae Im","Justin Rose",
-  "Akshay Bhatia","Brian Harman","J.J. Spaun","Maverick McNealy",
-  "Jason Day","Min Woo Lee","Sahith Theegala","Cameron Smith",
-  "Patrick Reed","Aaron Rai","Harris English","Ben Griffin",
-  "Chris Gotterup","Davis Thompson","Tom Kim","Stephan Jaeger",
-  "Cam Davis","Nick Taylor","Si Woo Kim","Daniel Berger",
-  "Andrew Novak","Will Zalatoris","Max Homa","Adam Scott",
-  "Thomas Detry","Ryan Fox","Kurt Kitayama","Tom Hoge",
-  "Nicolai Hojgaard","Rasmus Hojgaard","Jake Knapp","Lucas Glover",
-  "Webb Simpson","Brandt Snedeker","Matt McCarty","Davis Riley",
-  "Tom McKibbin","Marco Penge","Jhonattan Vegas","Bud Cauley",
-  "Alex Noren","Chris Kirk","Max Greyserman","Kristoffer Reitan",
-  "Michael Kim","Ryan Gerard","Harry Hall","Rico Hoey",
-  "Sami Valimaki","Samuel Stevens","Jacob Bridgeman","Niklas Norgaard",
-  "Adrien Saddier","Daniel Brown","Alex Fitzpatrick","Garrick Higgo",
-  "Kazuki Higa","Ryo Hisatsune","Aldrich Potgieter","Gary Woodland",
-  "Padraig Harrington","Y.E. Yang","Vijay Singh","David Toms",
-  "Rich Beem","Davis Love III","Jimmy Walker","Jason Dufner",
-  "Mark Brooks","John Daly","Sergio Garcia","Rickie Fowler",
-  "Dustin Johnson","Talor Gooch","Dean Burmester","Carlos Ortiz",
-  "Patrick Rodgers","Nicolas Echavarria","Michael Brennan",
-  // Club professionals (Corebridge Financial Team)
-  "Jesse Droemer","Braden Shattuck","Michael Block","Jared Jones",
-  "Ryan Lenahan","John Keefer","Francisco Bide","Derek Berg",
-  "Tyler Collet","Chris Gabriele","Mark Geddes","Zach Haynes",
-  "Austin Hurt","Bryce Fisher","Michael Kartrude","Ben Kern",
-  "Paul McClure","Ben Polland","Garrett Sapp","Ryan Vermeer",
-  "Timothy Wiseman","Shaun Micheel","Sudarshan Yellamaraju"
-].map((name, i) => ({ name, rank: i + 1 }));
+  ["Scottie Scheffler","+480"],["Rory McIlroy","+850"],["Cameron Young","+1200"],
+  ["Jon Rahm","+1500"],["Ludvig Åberg","+1600"],["Xander Schauffele","+1800"],
+  ["Matt Fitzpatrick","+2200"],["Bryson DeChambeau","+2200"],["Tommy Fleetwood","+2700"],
+  ["Brooks Koepka","+3300"],["Patrick Cantlay","+3500"],["Collin Morikawa","+4000"],
+  ["Min Woo Lee","+5000"],["Nicolai Højgaard","+5000"],["Justin Thomas","+5500"],
+  ["Justin Rose","+5500"],["Russell Henley","+5500"],["Rickie Fowler","+5500"],
+  ["Tyrrell Hatton","+5500"],["Adam Scott","+6000"],["Viktor Hovland","+6000"],
+  ["Si Woo Kim","+6000"],["Sam Burns","+6000"],["Chris Gotterup","+6000"],
+  ["J.J. Spaun","+6500"],["Robert MacIntyre","+6500"],["Patrick Reed","+7000"],
+  ["Maverick McNealy","+7000"],["Joaquin Niemann","+8000"],["Kurt Kitayama","+8000"],
+  ["Jordan Spieth","+8000"],["Shane Lowry","+8000"],["Sepp Straka","+8000"],
+  ["Hideki Matsuyama","+10000"],["Kristoffer Reitan","+10000"],["Harris English","+10000"],
+  ["Akshay Bhatia","+10000"],["Gary Woodland","+10000"],["Ben Griffin","+10000"],
+  ["David Puig","+10000"],["Thomas Detry","+10000"],["Alex Fitzpatrick","+10000"],
+  ["Keegan Bradley","+10000"],["Jacob Bridgeman","+10000"],["Alex Noren","+12500"],
+  ["Jason Day","+12500"],["Alex Smalley","+12500"],["Harry Hall","+12500"],
+  ["Pierceson Coody","+15000"],["Matt McCarty","+15000"],["Sungjae Im","+15000"],
+  ["Corey Conners","+15000"],["Sahith Theegala","+17500"],["Michael Thorbjornsen","+17500"],
+  ["Ryan Gerard","+17500"],["Wyndham Clark","+17500"],["Rasmus Højgaard","+17500"],
+  ["Brian Harman","+17500"],["Ryan Fox","+22500"],["Samuel Stevens","+22500"],
+  ["Ryo Hisatsune","+22500"],["Keith Mitchell","+22500"],["Aaron Rai","+22500"],
+  ["Nick Taylor","+22500"],["Marco Penge","+22500"],["Daniel Berger","+22500"],
+  ["Sudarshan Yellamaraju","+22500"],["Taylor Pendrith","+25000"],["Tom McKibbin","+25000"],
+  ["Ricky Castillo","+25000"],["Jordan Smith","+25000"],["Michael Brennan","+25000"],
+  ["Angel Ayora","+25000"],["Max Homa","+25000"],["Bud Cauley","+25000"],
+  ["Michael Kim","+25000"],["Jayden Schaper","+35000"],["Haotong Li","+35000"],
+  ["Daniel Hillier","+35000"],["Dustin Johnson","+35000"],["Aldrich Potgieter","+35000"],
+  ["Christiaan Bezuidenhout","+35000"],["Andrew Novak","+35000"],["Max Greyserman","+35000"],
+  ["J.T. Poston","+35000"],["Matt Wallace","+35000"],["Cameron Smith","+35000"],
+  ["Nico Echavarria","+35000"],["Andrew Putnam","+50000"],["Sami Valimaki","+50000"],
+  ["Rasmus Neergaard-Petersen","+50000"],["Bernd Wiesberger","+50000"],["Denny McCarthy","+50000"],
+  ["Stephan Jaeger","+50000"],["Richard Hoey","+50000"],["Lucas Glover","+50000"],
+  ["Stewart Cink","+50000"],["Billy Horschel","+50000"],["Patrick Rodgers","+50000"],
+  ["Max McGreevy","+50000"],["Ian Holt","+50000"],["Austin Smotherman","+50000"],
+  ["Mikael Lindberg","+50000"],["Chris Kirk","+75000"],["Johnny Keefer","+75000"],
+  ["Casey Jarvis","+75000"],["Steven Fisk","+75000"],["John Parry","+75000"],
+  ["Matti Schmid","+75000"],["Tom Hoge","+75000"],["Jimmy Walker","+100000"],
+  ["Braden Shattuck","+100000"],["Bryce Fisher","+100000"],["Jhonattan Vegas","+100000"],
+  ["Michael Block","+100000"],["Y.E. Yang","+100000"],["Luke Donald","+100000"],
+  ["Ben Kern","+100000"],["Elvis Smylie","+100000"],["Timothy Wiseman","+100000"],
+  ["Jared Jones","+100000"],["Paul McClure","+100000"],["Derek Berg","+100000"],
+  ["Garrett Sapp","+100000"],["Ryan Vermeer","+100000"],["Dan Brown","+100000"],
+  ["Adam Schenk","+100000"],["Francisco Bidé","+100000"],["Austin Hurt","+100000"],
+  ["Padraig Harrington","+100000"],["Adrien Saddier","+100000"],["Emiliano Grillo","+100000"],
+  ["Martin Kaymer","+100000"],["Kota Kaneko","+100000"],["Ben Polland","+100000"],
+  ["Brian Campbell","+100000"],["Shaun Micheel","+100000"],["Jason Dufner","+100000"],
+  ["Garrick Higgo","+100000"],["Jordan Gumberg","+100000"],["David Lipsky","+100000"],
+  ["William Mouw","+100000"],["Michael Kartrude","+100000"],["Joe Highsmith","+100000"],
+  ["Mark Geddes","+100000"],["Davis Riley","+100000"],["Tyler Collet","+100000"],
+  ["Chris Gabriele","+100000"],["Andy Sullivan","+100000"],["Zach Haynes","+100000"],
+  ["Travis Smyth","+100000"],["Ryan Lenahan","+100000"],["Kazuki Higa","+100000"],
+  ["Chandler Blanchet","+100000"],["Jesse Droemer","+100000"],["Brandt Snedeker","+100000"]
+].map(([name, odds], i) => ({ name, odds, rank: i + 1 }));
 
 // ========================================
 // LOCAL-ONLY STATE (not stored in Firebase)
@@ -1258,7 +1275,7 @@ function renderPlayerGrid() {
       return `<div class="player-card ${isDrafted ? 'drafted' : ''}"
         onclick="${isDrafted ? '' : `window.selectPlayer('${escapedName}')`}">
         <span class="player-name">${p.name}</span>
-        <span class="player-rank">#${p.rank}</span>
+        <span class="player-rank">${p.odds}</span>
       </div>`;
     }).join('');
 }
@@ -1397,7 +1414,7 @@ window.renderSwapGrid = function() {
       return `<div class="player-card ${isDrafted ? 'drafted' : ''}"
         onclick="${isDrafted ? '' : `window.confirmSwap('${escapedName}')`}">
         <span class="player-name">${p.name}</span>
-        <span class="player-rank">#${p.rank}</span>
+        <span class="player-rank">${p.odds}</span>
       </div>`;
     }).join('');
 };
