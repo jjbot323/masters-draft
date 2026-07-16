@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026 PGA Championship Pool</title>
+<title>2026 Open Championship Pool</title>
 <style>
 :root {
   --pga-navy: #0a2240;
@@ -32,190 +32,9 @@ header {
 header h1 { font-size: 1.5rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 2px; }
 header .subtitle { color: var(--pga-gold); font-style: italic; font-size: 1.05rem; letter-spacing: 1px; }
 
-/* Hero landing */
-.landing-hero {
-  position: relative;
-  min-height: 70vh;
-  display: flex; align-items: center; justify-content: center;
-  background:
-    radial-gradient(circle at 30% 20%, rgba(212,169,58,0.18) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(212,169,58,0.12) 0%, transparent 55%),
-    linear-gradient(135deg, #0a2240 0%, #103060 45%, #061633 100%);
-  margin: -20px -16px 20px -16px;
-  border-radius: 0 0 20px 20px;
-  overflow: hidden;
-}
-.landing-hero::before {
-  content: ""; position: absolute; inset: 0;
-  background:
-    repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 60px);
-  pointer-events: none;
-}
-.landing-hero-inner {
-  text-align: center; padding: 40px 20px; padding-top: 18vh; max-width: 460px; width: 100%; z-index: 1;
-}
-.landing-hero h2 {
-  font-size: 2.4rem; color: white; text-shadow: 0 2px 12px rgba(0,0,0,0.5);
-  letter-spacing: 2px; margin-bottom: 6px;
-}
-.landing-hero .hero-sub {
-  color: var(--pga-gold); font-style: italic; letter-spacing: 2px;
-  margin-bottom: 24px; font-size: 1rem; text-shadow: 0 1px 6px rgba(0,0,0,0.4);
-}
-.landing-hero .trophy {
-  font-size: 3.5rem; margin-bottom: 8px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-}
-.landing-hero .landing-btn {
-  background: rgba(255,255,255,0.95); border: 2px solid rgba(255,255,255,0.3);
-  backdrop-filter: blur(8px); box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-.landing-hero .landing-btn:hover {
-  background: white; border-color: var(--pga-gold);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.3); transform: translateY(-2px);
-}
-.landing-hero .landing-btn .icon { font-size: 1.6rem; width: 40px; }
-.landing-hero .landing-btn .label { font-size: 1.05rem; }
-.landing-hero #join-form .card {
-  background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-}
-.room-badge {
-  position: absolute; top: 12px; right: 16px;
-  background: rgba(255,255,255,0.15); border: 1px solid var(--pga-gold);
-  color: var(--pga-gold); padding: 4px 12px; border-radius: 6px;
-  font-size: 0.85rem; font-family: 'Courier New', monospace; letter-spacing: 2px;
-}
 .container { max-width: 1200px; margin: 0 auto; padding: 12px 12px; }
 .card { background: var(--card-bg); border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .card h2 { color: var(--pga-navy); font-size: 1.15rem; margin-bottom: 10px; border-bottom: 2px solid var(--pga-gold); padding-bottom: 6px; }
-.btn {
-  padding: 10px 24px; border: none; border-radius: 6px; font-size: 1rem;
-  cursor: pointer; font-family: inherit; transition: all 0.2s;
-}
-.btn-primary { background: var(--pga-navy); color: white; }
-.btn-primary:hover { background: var(--pga-dark); }
-.btn-gold { background: var(--pga-gold); color: var(--pga-dark); font-weight: bold; }
-.btn-gold:hover { background: #b8923a; }
-.btn-outline { background: transparent; border: 2px solid var(--pga-navy); color: var(--pga-navy); }
-.btn-sm { padding: 6px 16px; font-size: 0.9rem; }
-.btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
-.form-row { margin-bottom: 16px; }
-.form-row label { display: block; font-weight: bold; margin-bottom: 6px; color: var(--text); }
-.form-row select, .form-row input {
-  width: 100%; padding: 10px; border: 1px solid var(--border);
-  border-radius: 6px; font-size: 1rem; font-family: inherit;
-}
-.copy-btn {
-  background: var(--pga-gold); color: var(--pga-dark);
-  border: none; padding: 6px 16px; border-radius: 4px;
-  cursor: pointer; font-weight: bold; font-size: 0.85rem; margin-top: 8px;
-}
-
-/* Phase tabs */
-.phase-tabs {
-  display: flex; justify-content: center; gap: 0;
-  background: var(--card-bg); border-radius: 10px; overflow: hidden;
-  margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.phase-tab {
-  flex: 1; padding: 8px; text-align: center; font-weight: bold;
-  color: var(--text-light); background: var(--card-bg);
-  border: none; cursor: default; font-family: inherit; font-size: 0.85rem;
-  border-bottom: 3px solid transparent; transition: all 0.3s;
-}
-.phase-tab.active { color: var(--pga-navy); border-bottom-color: var(--pga-gold); }
-.step-num {
-  display: inline-block; width: 24px; height: 24px; line-height: 24px;
-  border-radius: 50%; background: var(--pga-light); color: var(--text-light);
-  font-size: 0.8rem; margin-right: 6px; text-align: center;
-}
-.phase-tab.active .step-num { background: var(--pga-navy); color: white; }
-
-/* Phases */
-.phase { display: none; }
-.phase.active { display: block; }
-
-/* Landing */
-.landing { text-align: center; max-width: 500px; margin: 40px auto; }
-.landing h2 { font-size: 1.8rem; color: var(--pga-navy); margin-bottom: 12px; }
-.landing p { color: var(--text-light); margin-bottom: 30px; font-size: 1.05rem; }
-.landing-btn {
-  display: flex; align-items: center; gap: 16px; width: 100%;
-  background: var(--card-bg); border: 2px solid var(--pga-light);
-  border-radius: 10px; padding: 12px 20px; margin-bottom: 10px; cursor: pointer;
-  transition: all 0.2s; text-align: left; font-family: inherit;
-}
-.landing-btn:hover { border-color: var(--pga-navy); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.landing-btn .icon { font-size: 2rem; width: 50px; text-align: center; }
-.landing-btn .label { font-size: 1.1rem; font-weight: bold; color: var(--text); }
-.landing-btn .desc { font-size: 0.85rem; color: var(--text-light); margin-top: 2px; }
-
-/* Mode badge */
-.mode-badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; }
-.mode-online { background: #d4edda; color: #155724; }
-
-/* Player grid */
-.player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; max-height: 400px; overflow-y: auto; padding: 4px; }
-.player-card {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 14px; background: var(--pga-cream); border: 1px solid var(--border);
-  border-radius: 6px; cursor: pointer; transition: all 0.15s;
-}
-.player-card:hover { border-color: var(--pga-navy); background: #e8eef7; }
-.player-card.drafted { opacity: 0.35; cursor: default; text-decoration: line-through; }
-.player-name { font-size: 0.95rem; }
-.player-rank { font-size: 0.8rem; color: var(--text-light); font-family: 'Courier New', monospace; }
-
-/* Draft board */
-.draft-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-.draft-table th { background: var(--pga-navy); color: white; padding: 10px 8px; text-align: center; font-size: 0.85rem; }
-.draft-table td { padding: 8px; text-align: center; border: 1px solid var(--border); font-size: 0.85rem; }
-.draft-table .round-label { font-weight: bold; color: var(--pga-navy); background: var(--pga-cream); white-space: nowrap; }
-.draft-table .current-pick { background: #fff9e6; border: 2px solid var(--pga-gold); }
-.draft-table .picked { background: #e8eef7; }
-
-/* Pick banner */
-.pick-banner {
-  background: linear-gradient(135deg, var(--pga-navy), var(--pga-dark));
-  color: white; text-align: center; padding: 16px; border-radius: 10px; margin-bottom: 20px;
-}
-.pick-banner .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--pga-gold); }
-.pick-banner .team-name { font-size: 1.6rem; font-weight: bold; margin: 4px 0; }
-.pick-banner .pick-info { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
-.pick-banner.my-turn { background: linear-gradient(135deg, #1b3a78, #0a2240); }
-.pick-banner.my-turn .label { color: #ffd54a; }
-
-/* Waiting message */
-.waiting-msg { text-align: center; padding: 20px; color: var(--text-light); font-style: italic; font-size: 1.1rem; }
-
-/* Confirm modal */
-.modal-overlay {
-  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
-}
-.modal-overlay.show { display: flex; }
-.modal-box {
-  background: white; border-radius: 12px; padding: 30px; max-width: 400px; width: 90%; text-align: center;
-}
-.modal-box h3 { color: var(--pga-navy); margin-bottom: 8px; font-size: 1.3rem; }
-.modal-box .sub { color: var(--text-light); margin-bottom: 20px; }
-
-/* Draft order cards */
-.draft-order-display { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-.draft-order-card {
-  background: var(--pga-cream); border: 2px solid var(--pga-navy);
-  border-radius: 8px; padding: 12px 20px; text-align: center; min-width: 100px;
-}
-.draft-order-card .pick-num { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; }
-.draft-order-card .team-name { font-size: 1.1rem; font-weight: bold; color: var(--pga-navy); margin-top: 4px; }
-
-/* Lobby */
-.player-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 14px; border-radius: 20px; background: var(--pga-cream);
-  border: 1px solid var(--border); margin: 4px;
-}
-.player-chip.me { border-color: var(--pga-navy); background: #e8eef7; font-weight: bold; }
-.online-dot { width: 8px; height: 8px; border-radius: 50%; background: #27ae60; }
 
 /* Scores */
 .score { font-weight: bold; font-family: 'Courier New', monospace; }
@@ -227,54 +46,9 @@ header .subtitle { color: var(--pga-gold); font-style: italic; font-size: 1.05re
 .scores-table td { padding: 5px 6px; border-bottom: 1px solid var(--border); }
 .team-row { cursor: pointer; }
 .team-row:hover { background: var(--pga-cream); }
-.team-detail { display: none; }
-.team-detail.open { display: table-row; }
-.team-detail td { background: #fafafa; padding: 12px 16px; }
-.team-player-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
 .status-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; font-weight: bold; }
 .status-active { background: #d4edda; color: #155724; }
 .status-cut { background: #f8d7da; color: #721c24; }
-
-/* Join form */
-#join-form { display: none; margin-top: 16px; }
-#join-form input { margin-bottom: 8px; }
-
-/* Compare panes */
-.compare-pane {
-  background: var(--card-bg); border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px; min-height: 200px;
-}
-.compare-pane .room-header {
-  display: flex; justify-content: space-between; align-items: baseline;
-  border-bottom: 2px solid var(--pga-gold); padding-bottom: 6px; margin-bottom: 10px;
-}
-.compare-pane .room-code {
-  font-family: 'Courier New', monospace; font-weight: bold;
-  font-size: 1.2rem; color: var(--pga-navy); letter-spacing: 2px;
-}
-.compare-pane .phase-pill {
-  font-size: 0.7rem; padding: 2px 8px; border-radius: 10px;
-  background: var(--pga-cream); color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;
-}
-.compare-pane .team-block {
-  margin-bottom: 12px; padding: 8px 10px; background: var(--pga-cream); border-radius: 6px;
-}
-.compare-pane .team-name { font-weight: bold; color: var(--pga-navy); margin-bottom: 4px; font-size: 0.95rem; }
-.compare-pane .team-pick {
-  font-size: 0.85rem; padding: 2px 0; display: flex; justify-content: space-between; gap: 6px;
-}
-.compare-pane .team-pick .player-score {
-  color: var(--text-light); font-variant-numeric: tabular-nums; font-size: 0.8rem;
-}
-.compare-pane .team-total {
-  border-top: 1px dashed var(--border); margin-top: 4px; padding-top: 4px;
-  font-size: 0.85rem; display: flex; justify-content: space-between;
-}
-.compare-pane .team-total strong { color: var(--pga-navy); }
-.compare-pane .empty-state { color: var(--text-light); font-style: italic; padding: 20px; text-align: center; }
-@media (max-width: 768px) {
-  #compare-container { grid-template-columns: 1fr !important; }
-}
 
 /* Toast */
 .toast {
@@ -285,1147 +59,50 @@ header .subtitle { color: var(--pga-gold); font-style: italic; font-size: 1.05re
 }
 .toast.show { opacity: 1; }
 
-/* Search */
-.search-box { position: relative; margin-bottom: 12px; }
-.search-box input { padding-left: 36px; }
-.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
-
 /* Responsive */
 @media (max-width: 768px) {
   header h1 { font-size: 1.4rem; letter-spacing: 1px; }
-  .room-badge { position: static; margin-top: 8px; display: inline-block; }
-  .phase-tab { font-size: 0.85rem; padding: 10px 8px; }
-  .phase-tab .step-num { display: none; }
-  .landing { margin: 30px auto; }
-}
-@media (max-width: 480px) {
-  .player-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>2026 PGA Championship Pool</h1>
-  <div class="subtitle">Aronimink &middot; Newtown Square, PA</div>
-  <div class="room-badge" id="room-badge" style="display:none">
-    Room: <span id="room-code-display"></span>
-  </div>
+  <h1>2026 Open Championship Pool</h1>
+  <div class="subtitle">Royal Birkdale &middot; Southport, England &middot; July 16&ndash;19</div>
 </header>
 
 <div class="container">
-  <div class="phase-tabs" id="phase-tabs" style="display:none">
-    <button class="phase-tab active" data-phase="setup"><span class="step-num">1</span> Setup</button>
-    <button class="phase-tab" data-phase="draft"><span class="step-num">2</span> Draft</button>
-    <button class="phase-tab" data-phase="scores"><span class="step-num">3</span> Scores</button>
-  </div>
-
-  <!-- LANDING -->
-  <div class="phase active" id="phase-landing">
-    <div class="landing-hero">
-      <div class="landing-hero-inner">
-        <div class="trophy">&#127942;</div>
-        <h2>PGA CHAMPIONSHIP</h2>
-        <div class="hero-sub">ARONIMINK &middot; MAY 14&ndash;17, 2026</div>
-
-        <div id="landing-buttons">
-          <button class="landing-btn" onclick="showCreate()">
-            <div class="icon">+</div>
-            <div><div class="label">Create New Draft</div><div class="desc" style="font-size:0.8rem; color:var(--text-light);">Start a pool and invite friends</div></div>
-          </button>
-          <button class="landing-btn" onclick="showJoin()">
-            <div class="icon">&#x1F517;</div>
-            <div><div class="label">Join Draft or Pool</div></div>
-          </button>
-          <button class="landing-btn" onclick="showCompare()">
-            <div class="icon">&#x1F441;</div>
-            <div><div class="label">Compare Rooms</div><div class="desc" style="font-size:0.8rem; color:var(--text-light);">View two pools side-by-side (read-only)</div></div>
-          </button>
-        </div>
-
-        <div id="join-form">
-          <div class="card">
-            <h2>Join a Room</h2>
-            <div class="form-row">
-              <label>Room Code</label>
-              <input type="text" id="join-code" maxlength="4" placeholder="ABCD" style="text-transform:uppercase; letter-spacing:4px; text-align:center; font-size:1.3rem;">
-            </div>
-            <div class="form-row">
-              <label>Your Name</label>
-              <input type="text" id="join-name" placeholder="Enter your name">
-            </div>
-            <div class="btn-group">
-              <button class="btn btn-primary" onclick="joinRoom()">Join</button>
-              <button class="btn btn-outline" onclick="hideJoin()">Cancel</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="compare-form" style="display:none;">
-          <div class="card">
-            <h2>Compare Rooms</h2>
-            <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:12px;">View both pools side-by-side. Read-only - no need to join.</p>
-            <div class="form-row">
-              <label>Room Code 1</label>
-              <input type="text" id="cmp-code-1" maxlength="12" placeholder="ABCD" style="text-transform:uppercase; letter-spacing:3px; text-align:center; font-size:1.2rem;">
-            </div>
-            <div class="form-row">
-              <label>Room Code 2</label>
-              <input type="text" id="cmp-code-2" maxlength="12" placeholder="EFGH" style="text-transform:uppercase; letter-spacing:3px; text-align:center; font-size:1.2rem;">
-            </div>
-            <div class="btn-group">
-              <button class="btn btn-primary" onclick="openCompare()">View Both</button>
-              <button class="btn btn-outline" onclick="hideCompare()">Cancel</button>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; margin-bottom:4px;">
+    <span style="font-weight:bold; color:var(--pga-navy); font-size:0.95rem;">Leaderboard</span>
+    <div>
+      <span id="tournament-status" style="font-size:0.7rem; color:var(--text-light);"></span>
+      <span id="last-update" style="font-size:0.65rem; color:var(--text-light); margin-left:4px;"></span>
     </div>
   </div>
-
-  <!-- COMPARE (read-only side-by-side) -->
-  <div class="phase" id="phase-compare">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-      <h2 style="margin:0;">Pool Comparison</h2>
-      <div>
-        <button class="btn btn-outline" onclick="refreshCompare()" style="font-size:0.85rem;">&#x21bb; Refresh</button>
-        <button class="btn btn-outline" onclick="leaveCompare()" style="font-size:0.85rem;">&larr; Back</button>
-      </div>
-    </div>
-    <div id="compare-last-update" style="font-size:0.78rem; color:var(--text-light); margin-bottom:12px; font-style:italic;">Loading live scores...</div>
-    <div id="compare-container" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-      <div id="compare-pane-1" class="compare-pane"></div>
-      <div id="compare-pane-2" class="compare-pane"></div>
-    </div>
-  </div>
-
-  <!-- SETUP (Commissioner) -->
-  <div class="phase" id="phase-setup">
-    <div class="phase-tabs-inline" style="display:flex; justify-content:center; gap:0; margin-bottom:20px;">
-    </div>
-    <div class="card">
-      <h2>Draft Settings <span class="mode-badge mode-online" id="mode-badge-setup">ONLINE</span></h2>
-      <div id="share-link-box" style="display:none; text-align:center; margin-bottom:16px; padding:12px; background:var(--pga-cream); border-radius:8px;">
-        <div style="font-size:0.85rem; color:var(--text-light);">Share this code with your friends:</div>
-        <div style="font-size:2rem; font-family:'Courier New',monospace; letter-spacing:6px; color:var(--pga-navy); font-weight:bold;" id="share-room-code"></div>
-        <button class="copy-btn" onclick="copyRoomCode()">Copy Code</button>
-      </div>
-      <div class="form-row">
-        <label>Number of Teams</label>
-        <select id="num-teams" onchange="renderTeamInputs()">
-          <option value="2">2</option>
-          <option value="3" selected>3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-        </select>
-      </div>
-      <div id="team-name-inputs"></div>
-      <div class="form-row">
-        <label>Golfers Per Team</label>
-        <select id="picks-per-team">
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5" selected>5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>Scoring</label>
-        <select id="scoring-type">
-          <option value="all">All Golfers Count</option>
-          <option value="best4">Best 4 of Team</option>
-          <option value="best3">Best 3 of Team</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>Missed Cut Rule</label>
-        <select id="cut-rule">
-          <option value="freeze" selected>Freeze at cut score (or worst active teammate if higher)</option>
-          <option value="raw">Keep raw score (no adjustment)</option>
-        </select>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="generateDraftOrder()">Randomize Draft Order</button>
-      </div>
-    </div>
-    <div class="card" id="draft-order-card" style="display:none">
-      <h2>Draft Order</h2>
-      <div id="draft-order-display" class="draft-order-display"></div>
-      <p style="margin-top:12px; color:var(--text-light); font-size:0.9rem;">Snake format: Order reverses each round.</p>
-      <div class="btn-group">
-        <button class="btn btn-gold" onclick="generateDraftOrder()">Re-Randomize</button>
-        <button class="btn btn-primary" onclick="startDraft()">Start Draft</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- LOBBY (Joiners wait here) -->
-  <div class="phase" id="phase-lobby">
-    <div class="card" style="text-align:center;">
-      <h2>Waiting for Commissioner</h2>
-      <p style="margin-bottom:16px;">Room Code: <strong id="lobby-room-code" style="font-family:'Courier New',monospace; font-size:1.3rem; letter-spacing:4px;"></strong></p>
-      <p style="color:var(--text-light); margin-bottom:16px;">The commissioner is setting up the draft. Hang tight!</p>
-      <div id="lobby-players" style="margin-top:12px;"></div>
-    </div>
-  </div>
-
-  <!-- DRAFT -->
-  <div class="phase" id="phase-draft">
-    <div class="pick-banner" id="pick-banner">
-      <div class="label">Now Picking</div>
-      <div class="team-name" id="current-team-name">...</div>
-      <div class="pick-info" id="current-pick-info"></div>
-    </div>
-
-    <div class="card" id="pick-card">
-      <h2>Select a Golfer</h2>
-      <div class="search-box">
-        <span class="search-icon">&#x1F50D;</span>
-        <input type="text" id="player-search" placeholder="Search players..." oninput="renderPlayerGrid()">
-      </div>
-      <div class="player-grid" id="player-grid"></div>
-    </div>
-
-    <div class="card">
-      <h2>Draft Board</h2>
-      <div style="overflow-x:auto;">
-        <table class="draft-table" id="draft-board"></table>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-outline btn-sm" id="undo-btn" style="display:none" onclick="undoPick()">Undo Last Pick</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SCORES -->
-  <div class="phase" id="phase-scores">
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; margin-bottom:4px;">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <span style="font-weight:bold; color:var(--pga-navy); font-size:0.95rem;">Leaderboard</span>
-        <button class="btn btn-outline btn-sm" id="edit-rosters-btn" style="display:none; padding:2px 8px; font-size:0.7rem;" onclick="window.showEditRosters()">Edit</button>
-      </div>
-      <div>
-        <span id="tournament-status" style="font-size:0.7rem; color:var(--text-light);"></span>
-        <span id="last-update" style="font-size:0.65rem; color:var(--text-light); margin-left:4px;"></span>
-      </div>
-    </div>
-    <div id="team-leaderboard"></div>
-    <div class="card">
-      <h2>Full Leaderboard</h2>
-      <div style="overflow-x:auto;">
-        <table class="scores-table" id="full-leaderboard"></table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Confirm Modal -->
-<div class="modal-overlay" id="confirm-modal">
-  <div class="modal-box">
-    <h3 id="confirm-player-name"></h3>
-    <div class="sub" id="confirm-team-label"></div>
-    <div class="btn-group" style="justify-content:center">
-      <button class="btn btn-primary" onclick="confirmPick()">Confirm Pick</button>
-      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Edit Rosters Modal -->
-<div class="modal-overlay" id="edit-rosters-modal">
-  <div class="modal-box" style="max-width:500px; text-align:left; max-height:80vh; overflow-y:auto;">
-    <h3 style="color:var(--pga-navy); margin-bottom:16px; text-align:center;">Edit Rosters</h3>
-    <div id="edit-rosters-content"></div>
-    <div class="btn-group" style="justify-content:center; margin-top:16px;">
-      <button class="btn btn-outline" onclick="window.closeEditRosters()">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- Swap Player Modal -->
-<div class="modal-overlay" id="swap-modal">
-  <div class="modal-box" style="max-width:450px; text-align:left; max-height:80vh; overflow-y:auto;">
-    <h3 style="color:var(--pga-navy); margin-bottom:4px; text-align:center;">Swap Player</h3>
-    <div style="text-align:center; color:var(--text-light); margin-bottom:12px;" id="swap-info"></div>
-    <div class="search-box" style="margin-bottom:8px;">
-      <span class="search-icon">&#x1F50D;</span>
-      <input type="text" id="swap-search" placeholder="Search available players..." oninput="window.renderSwapGrid()">
-    </div>
-    <div class="player-grid" id="swap-grid" style="max-height:300px;"></div>
-    <div class="btn-group" style="justify-content:center; margin-top:12px;">
-      <button class="btn btn-outline" onclick="window.closeSwapModal()">Cancel</button>
+  <div id="team-leaderboard"></div>
+  <div class="card">
+    <h2>Full Leaderboard</h2>
+    <div style="overflow-x:auto;">
+      <table class="scores-table" id="full-leaderboard"></table>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase SDK (modular via CDN) -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, set, update, onValue, get, child } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-
+<script>
 // ========================================
-// FIREBASE INIT
+// TEAMS (fixed — no draft this time)
 // ========================================
-const app = initializeApp({
-  apiKey: "AIzaSyDpn_bIH5WaGrip57D5m-7KqLzSoU41YrQ",
-  authDomain: "masters-draft-555c4.firebaseapp.com",
-  databaseURL: "https://masters-draft-555c4-default-rtdb.firebaseio.com",
-  projectId: "masters-draft-555c4",
-  storageBucket: "masters-draft-555c4.firebasestorage.app",
-  messagingSenderId: "836067056669",
-  appId: "1:836067056669:web:e0488171817f7b0f9b7af4"
-});
-const db = getDatabase(app);
-
-// Rooms are stored under /rooms/pga/ to keep PGA pools separate from Masters pools
-const ROOMS_PATH = 'rooms/pga';
-
-// ========================================
-// PGA CHAMPIONSHIP FIELD (2026, Aronimink)
-// Approximate field of 156. Ranking is rough draft order.
-// ========================================
-const PGA_FIELD = [
-  // Top contenders
-  "Scottie Scheffler","Rory McIlroy","Xander Schauffele","Bryson DeChambeau",
-  "Ludvig Aberg","Jon Rahm","Collin Morikawa","Cameron Young",
-  "Justin Thomas","Viktor Hovland","Tommy Fleetwood","Hideki Matsuyama",
-  "Patrick Cantlay","Shane Lowry","Tyrrell Hatton","Russell Henley",
-  "Matt Fitzpatrick","Sepp Straka","Corey Conners","Sam Burns",
-  "Keegan Bradley","Robert MacIntyre","Joaquin Niemann","Brooks Koepka",
-  "Wyndham Clark","Jordan Spieth","Sungjae Im","Justin Rose",
-  "Akshay Bhatia","Brian Harman","J.J. Spaun","Maverick McNealy",
-  "Jason Day","Min Woo Lee","Sahith Theegala","Cameron Smith",
-  "Patrick Reed","Aaron Rai","Harris English","Ben Griffin",
-  "Chris Gotterup","Davis Thompson","Tom Kim","Stephan Jaeger",
-  "Cam Davis","Nick Taylor","Si Woo Kim","Daniel Berger",
-  "Andrew Novak","Will Zalatoris","Max Homa","Adam Scott",
-  "Thomas Detry","Ryan Fox","Kurt Kitayama","Tom Hoge",
-  "Nicolai Hojgaard","Rasmus Hojgaard","Jake Knapp","Lucas Glover",
-  "Webb Simpson","Brandt Snedeker","Matt McCarty","Davis Riley",
-  "Tom McKibbin","Marco Penge","Jhonattan Vegas","Bud Cauley",
-  "Alex Noren","Chris Kirk","Max Greyserman","Kristoffer Reitan",
-  "Michael Kim","Ryan Gerard","Harry Hall","Rico Hoey",
-  "Sami Valimaki","Samuel Stevens","Jacob Bridgeman","Niklas Norgaard",
-  "Adrien Saddier","Daniel Brown","Alex Fitzpatrick","Garrick Higgo",
-  "Kazuki Higa","Ryo Hisatsune","Aldrich Potgieter","Gary Woodland",
-  "Padraig Harrington","Y.E. Yang","Vijay Singh","David Toms",
-  "Rich Beem","Davis Love III","Jimmy Walker","Jason Dufner",
-  "Mark Brooks","John Daly","Sergio Garcia","Rickie Fowler",
-  "Dustin Johnson","Talor Gooch","Dean Burmester","Carlos Ortiz",
-  "Patrick Rodgers","Nicolas Echavarria","Michael Brennan",
-  // Club professionals (Corebridge Financial Team)
-  "Jesse Droemer","Braden Shattuck","Michael Block","Jared Jones",
-  "Ryan Lenahan","John Keefer","Francisco Bide","Derek Berg",
-  "Tyler Collet","Chris Gabriele","Mark Geddes","Zach Haynes",
-  "Austin Hurt","Bryce Fisher","Michael Kartrude","Ben Kern",
-  "Paul McClure","Ben Polland","Garrett Sapp","Ryan Vermeer",
-  "Timothy Wiseman","Shaun Micheel","Sudarshan Yellamaraju"
-].map((name, i) => ({ name, rank: i + 1 }));
-
-// ========================================
-// LOCAL-ONLY STATE (not stored in Firebase)
-// ========================================
-let myName = null;
-let isCommissioner = false;
-let roomCode = null;
-let roomRef = null;
-let unsubscribe = null;
-let pendingPlayer = null;
-let currentPhase = 'landing';
-
-// ========================================
-// ROOM DATA (derived from Firebase)
-// ========================================
-let room = {
-  phase: 'setup',
-  commissioner: '',
-  teams: [],
-  draftOrder: [],
-  picksPerTeam: 5,
-  scoringType: 'all',
-  cutRule: 'freeze',
-  currentPick: 0,
-  draftComplete: false,
-  picks: {},
-  drafted: {},
-  players: {}
+const TEAMS = {
+  "Josh":    ["Tommy Fleetwood","Matt Fitzpatrick","Chris Gotterup","Robert MacIntyre","Wyndham Clark"],
+  "Brandon": ["Scottie Scheffler","Jon Rahm","Cameron Young","Sam Burns","Viktor Hovland"],
+  "Gunner":  ["Rory McIlroy","Xander Schauffele","Justin Rose","Tyrrell Hatton","Hideki Matsuyama"]
 };
-
-// ========================================
-// FIREBASE HELPERS
-// ========================================
-function roomUpdate(updates) {
-  if (!roomRef) return Promise.reject(new Error('No room'));
-  return update(roomRef, updates).catch(err => {
-    console.error('Firebase update failed:', err);
-    showToast('Sync error: ' + err.message);
-  });
-}
-
-function objToArray(obj) {
-  if (!obj) return [];
-  if (Array.isArray(obj)) return obj;
-  const keys = Object.keys(obj);
-  if (keys.length === 0) return [];
-  const isNumeric = keys.every(k => /^\d+$/.test(k));
-  if (isNumeric) {
-    const arr = [];
-    keys.sort((a, b) => Number(a) - Number(b)).forEach(k => { arr.push(obj[k]); });
-    return arr;
-  }
-  return Object.values(obj);
-}
-
-function picksObjToMap(obj) {
-  if (!obj) return {};
-  const result = {};
-  for (const [team, picks] of Object.entries(obj)) {
-    result[team] = objToArray(picks);
-  }
-  return result;
-}
-
-function picksMapToObj(map) {
-  const result = {};
-  for (const [team, arr] of Object.entries(map)) {
-    const obj = {};
-    arr.forEach((player, i) => { obj[String(i)] = player; });
-    result[team] = obj;
-  }
-  return result;
-}
-
-function draftedToObj(arr) {
-  const obj = {};
-  arr.forEach((player, i) => { obj[String(i)] = player; });
-  return obj;
-}
-
-// ========================================
-// ROOM CODE
-// ========================================
-function generateRoomCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  return code;
-}
-
-// ========================================
-// SNAKE DRAFT ORDER
-// ========================================
-function getSnakeOrder() {
-  const order = [];
-  for (let rd = 0; rd < room.picksPerTeam; rd++) {
-    const rdOrder = rd % 2 === 0 ? [...room.draftOrder] : [...room.draftOrder].reverse();
-    rdOrder.forEach(team => order.push({ team, round: rd + 1 }));
-  }
-  return order;
-}
-
-// ========================================
-// CREATE / JOIN
-// ========================================
-window.showCreate = function() {
-  const name = prompt("Enter your name:");
-  if (!name) return;
-  myName = name.trim();
-  isCommissioner = true;
-  roomCode = generateRoomCode();
-  roomRef = ref(db, ROOMS_PATH + '/' + roomCode);
-
-  const roomData = {
-    commissioner: myName,
-    phase: 'setup',
-    config: { picksPerTeam: 5, scoringType: 'all', cutRule: 'freeze', numTeams: 3 },
-    teams: [],
-    draftOrder: [],
-    picks: {},
-    drafted: {},
-    currentPick: 0,
-    draftComplete: false,
-    players: { [myName]: { online: true, joined: Date.now() } }
-  };
-
-  set(roomRef, roomData).then(() => {
-    showRoomBadge();
-    switchPhase('setup');
-    renderTeamInputs();
-    document.getElementById('share-link-box').style.display = 'block';
-    document.getElementById('share-room-code').textContent = roomCode;
-    listenToRoom();
-  }).catch(err => {
-    console.error('Create room failed:', err);
-    showToast('Could not create room: ' + err.message);
-  });
-};
-
-window.showJoin = function() {
-  document.getElementById('join-form').style.display = 'block';
-  document.getElementById('compare-form').style.display = 'none';
-};
-
-window.hideJoin = function() {
-  document.getElementById('join-form').style.display = 'none';
-};
-
-window.showCompare = function() {
-  document.getElementById('compare-form').style.display = 'block';
-  document.getElementById('join-form').style.display = 'none';
-};
-
-window.hideCompare = function() {
-  document.getElementById('compare-form').style.display = 'none';
-};
-
-let compareUnsubs = [];
-let compareCodes = [];
-
-window.openCompare = function() {
-  const c1 = document.getElementById('cmp-code-1').value.trim().toUpperCase();
-  const c2 = document.getElementById('cmp-code-2').value.trim().toUpperCase();
-  if (!c1 || c1.length < 4) { showToast('Enter Room Code 1'); return; }
-  if (!c2 || c2.length < 4) { showToast('Enter Room Code 2'); return; }
-  compareCodes = [c1, c2];
-  hideCompare();
-  switchPhase('compare');
-  loadCompareRooms();
-  startScoreRefresh();
-};
-
-window.leaveCompare = function() {
-  compareUnsubs.forEach(u => { try { u(); } catch (_) {} });
-  compareUnsubs = [];
-  compareCodes = [];
-  if (scoreInterval) { clearInterval(scoreInterval); scoreInterval = null; }
-  switchPhase('landing');
-};
-
-window.refreshCompare = function() {
-  if (compareCodes.length === 2) {
-    loadCompareRooms();
-    fetchScores();
-  }
-};
-
-function loadCompareRooms() {
-  compareUnsubs.forEach(u => { try { u(); } catch (_) {} });
-  compareUnsubs = [];
-  compareCodes.forEach((code, idx) => {
-    const paneId = 'compare-pane-' + (idx + 1);
-    const pane = document.getElementById(paneId);
-    pane.innerHTML = '<div class="empty-state">Loading room ' + code + '...</div>';
-    const rRef = ref(db, ROOMS_PATH + '/' + code);
-    const unsub = onValue(rRef, (snap) => {
-      if (!snap.exists()) {
-        pane.innerHTML = '<div class="empty-state">Room <strong>' + code + '</strong> not found.</div>';
-        pane._lastData = null;
-        return;
-      }
-      pane._lastData = snap.val();
-      renderComparePane(pane, code, pane._lastData);
-    }, (err) => {
-      console.error('Compare load failed:', err);
-      pane.innerHTML = '<div class="empty-state">Error loading ' + code + ': ' + err.message + '</div>';
-    });
-    compareUnsubs.push(unsub);
-  });
-}
-
-// Lookup live score for a player. Reuses findPlayerScore (defined below) which already
-// handles accents, case, and last-name + first-initial fuzzy matching.
-function lookupCompareScore(scores, name) {
-  if (!scores || Object.keys(scores).length === 0) return null;
-  // Try mojibake-repaired variant first (handles old Firebase data written with bad encoding)
-  let candidate = name;
-  try {
-    const repaired = decodeURIComponent(escape(name));
-    if (repaired !== name && scores[repaired]) candidate = repaired;
-  } catch (_) {}
-  const result = findPlayerScore(candidate);
-  // findPlayerScore returns a placeholder { status: 'unknown' } when not found
-  if (result && result.status !== 'unknown') return result;
-  return null;
-}
-
-function fmtToPar(v) {
-  if (v === 0) return 'E';
-  return v > 0 ? '+' + v : '' + v;
-}
-
-// Compute field-average to-par per round (excludes cut players). Returns {r3, r4} or nulls.
-function computeCompareFieldAvgs(scores) {
-  function avg(roundIdx) {
-    const vals = Object.values(scores)
-      .filter(p => p && p.status !== 'cut')
-      .map(p => parseRoundToPar((p.rounds || [])[roundIdx]))
-      .filter(v => v !== null);
-    if (vals.length === 0) return null;
-    return vals.reduce((a, b) => a + b, 0) / vals.length;
-  }
-  return { r3: avg(2), r4: avg(3) };
-}
-
-// Apply cut-freeze projection: player's own Thu/Fri pace, or field avg + 2 if field plays worse.
-// Returns { toPar, toParDisplay } reflecting the full-tournament projection.
-function applyCutFreeze(sd, fieldAvgs) {
-  const rounds = sd.rounds || [];
-  const r1 = parseRoundToPar(rounds[0]);
-  const r2 = parseRoundToPar(rounds[1]);
-  if (r1 === null && r2 === null) return { toPar: sd.toPar, toParDisplay: sd.toParDisplay };
-  const validRounds = [r1, r2].filter(v => v !== null);
-  const playerAvg = Math.round(validRounds.reduce((a, b) => a + b, 0) / validRounds.length);
-  const projR3 = fieldAvgs.r3 !== null
-    ? Math.max(playerAvg, Math.round(fieldAvgs.r3) + 2) : playerAvg;
-  const projR4 = fieldAvgs.r4 !== null
-    ? Math.max(playerAvg, Math.round(fieldAvgs.r4) + 2) : playerAvg;
-  const actual = (r1 || 0) + (r2 || 0);
-  const total = actual + projR3 + projR4;
-  return {
-    toPar: total,
-    toParDisplay: (total === 0 ? 'E' : (total > 0 ? '+' + total : '' + total)) + '*',
-  };
-}
-
-function renderComparePane(pane, code, data) {
-  const teams = objToArray(data.teams);
-  const picks = picksObjToMap(data.picks);
-  const phase = data.phase || 'setup';
-  const scoringType = data.config?.scoringType || 'all';
-  const cutRule = data.config?.cutRule || 'freeze';
-  const scores = window._lastScoreData || null;
-  const hasScores = scores && Object.keys(scores).length > 0;
-  const fieldAvgs = hasScores ? computeCompareFieldAvgs(scores) : { r3: null, r4: null };
-
-  let html = '';
-  html += '<div class="room-header">';
-  html += '<span class="room-code">' + code + '</span>';
-  html += '<span class="phase-pill">' + phase + '</span>';
-  html += '</div>';
-
-  if (!teams.length) {
-    html += '<div class="empty-state">No teams yet (setup in progress).</div>';
-    pane.innerHTML = html;
-    return;
-  }
-
-  // Build team rows with live scoring
-  const teamRows = teams.map(t => {
-    const teamPicks = (picks[t] || []).map(name => {
-      const sd = lookupCompareScore(scores, name);
-      let toPar = sd ? sd.toPar : 0;
-      let toParDisplay = sd ? sd.toParDisplay : '--';
-      let cutAdjusted = false;
-      if (sd && sd.status === 'cut' && cutRule === 'freeze') {
-        const frozen = applyCutFreeze(sd, fieldAvgs);
-        toPar = frozen.toPar;
-        toParDisplay = frozen.toParDisplay;
-        cutAdjusted = true;
-      }
-      return {
-        name,
-        toPar,
-        toParDisplay,
-        position: sd ? sd.position : '--',
-        status: sd ? sd.status : 'tee',
-        thru: sd ? sd.thru : '--',
-        hasScore: !!sd,
-        cutAdjusted,
-      };
-    });
-    // Sort within team by to-par (lowest = best at top)
-    if (hasScores) teamPicks.sort((a, b) => (a.hasScore ? a.toPar : 999) - (b.hasScore ? b.toPar : 999));
-    // Apply scoringType: best-N players count
-    let counting = teamPicks;
-    if (scoringType === 'best4') counting = teamPicks.slice(0, 4);
-    else if (scoringType === 'best3') counting = teamPicks.slice(0, 3);
-    const total = counting.filter(p => p.hasScore).reduce((s, p) => s + p.toPar, 0);
-    const countedScored = counting.filter(p => p.hasScore).length;
-    return { team: t, picks: teamPicks, counting, total, countedScored };
-  });
-  if (hasScores) teamRows.sort((a, b) => a.total - b.total);
-
-  // Compute leader for per-team coloring
-  teamRows.forEach((tr, idx) => {
-    html += '<div class="team-block">';
-    html += '<div class="team-name">';
-    if (hasScores && tr.countedScored > 0) html += '<span style="color:var(--pga-gold);margin-right:6px;">' + (idx + 1) + '.</span>';
-    html += escapeHtml(tr.team) + '</div>';
-    tr.picks.forEach(p => {
-      const inCount = tr.counting.includes(p);
-      const dim = !inCount && scoringType !== 'all' ? 'opacity:0.45;' : '';
-      const cutBadge = p.status === 'cut' ? ' <span style="background:var(--red); color:white; font-size:0.65rem; padding:1px 5px; border-radius:3px; margin-left:4px; letter-spacing:0.5px;">MISSED CUT</span>' : '';
-      const tparCls = p.hasScore ? (p.toPar < 0 ? 'under' : (p.toPar > 0 ? 'over' : 'even')) : '';
-      const tparStyle = tparCls === 'under' ? 'color:var(--red);' :
-                       (tparCls === 'over' ? 'color:var(--text);' : 'color:var(--text-light);');
-      html += '<div class="team-pick" style="' + dim + '">';
-      html += '<span>' + escapeHtml(p.name) + cutBadge + '</span>';
-      if (p.hasScore) {
-        html += '<span class="player-score"><span style="' + tparStyle + 'font-weight:600;">' + escapeHtml(p.toParDisplay) + '</span>';
-        if (p.position && p.position !== '--' && !p.cutAdjusted) html += ' <span style="color:var(--text-light);">' + escapeHtml(p.position) + '</span>';
-        html += '</span>';
-      } else {
-        html += '<span class="player-score">--</span>';
-      }
-      html += '</div>';
-    });
-    if (hasScores && tr.countedScored > 0) {
-      const totalStyle = tr.total < 0 ? 'color:var(--red);' : (tr.total > 0 ? 'color:var(--text);' : '');
-      html += '<div class="team-total"><span>Team total</span><strong style="' + totalStyle + '">' + fmtToPar(tr.total) + '</strong></div>';
-    }
-    html += '</div>';
-  });
-
-  // Footer note if any cut-frozen projections shown
-  const anyCutAdjusted = teamRows.some(tr => tr.picks.some(p => p.cutAdjusted));
-  if (anyCutAdjusted) {
-    html += '<div style="font-size:0.7rem; color:var(--text-light); font-style:italic; margin-top:8px; text-align:center;">* projected weekend rounds for missed-cut players</div>';
-  }
-
-  pane.innerHTML = html;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-window.joinRoom = function() {
-  const code = document.getElementById('join-code').value.trim().toUpperCase();
-  const name = document.getElementById('join-name').value.trim();
-  if (!code || code.length < 4) { showToast('Enter a 4-character room code'); return; }
-  if (!name) { showToast('Enter your name'); return; }
-
-  myName = name;
-  isCommissioner = false;
-  roomCode = code;
-  roomRef = ref(db, ROOMS_PATH + '/' + code);
-
-  get(roomRef).then(snap => {
-    if (!snap.exists()) {
-      showToast('Room not found. Check the code.');
-      roomRef = null;
-      return;
-    }
-    update(ref(db, ROOMS_PATH + '/' + code + '/players/' + name), { online: true, joined: Date.now() });
-    showRoomBadge();
-    listenToRoom();
-  }).catch(err => {
-    console.error('Join failed:', err);
-    showToast('Could not join room: ' + err.message);
-  });
-};
-
-// ========================================
-// LISTEN TO ROOM (single listener, source of truth)
-// ========================================
-function listenToRoom() {
-  if (!roomRef) return;
-  if (unsubscribe) unsubscribe();
-
-  unsubscribe = onValue(roomRef, (snap) => {
-    if (!snap.exists()) return;
-    const data = snap.val();
-
-    room.phase = data.phase || 'setup';
-    room.commissioner = data.commissioner || '';
-    room.teams = objToArray(data.teams);
-    room.draftOrder = objToArray(data.draftOrder);
-    room.picksPerTeam = data.config?.picksPerTeam || 5;
-    room.scoringType = data.config?.scoringType || 'all';
-    room.cutRule = data.config?.cutRule || 'freeze';
-    room.currentPick = data.currentPick || 0;
-    room.draftComplete = data.draftComplete || false;
-    room.picks = picksObjToMap(data.picks);
-    room.drafted = objToArray(data.drafted);
-    room.players = data.players || {};
-    room.totalPicks = room.teams.length * room.picksPerTeam;
-
-    for (const team of Object.keys(room.picks)) {
-      room.picks[team] = (room.picks[team] || []).filter(v => typeof v === 'string');
-    }
-    room.drafted = (room.drafted || []).filter(v => typeof v === 'string');
-
-    if (!isCommissioner && room.phase === 'setup') {
-      switchPhase('lobby');
-      renderLobby();
-    } else if (room.phase === 'draft') {
-      switchPhase('draft');
-      renderDraft();
-    } else if (room.phase === 'scores' || room.draftComplete) {
-      switchPhase('scores');
-      renderScores();
-    } else if (isCommissioner && room.phase === 'setup') {
-      if (currentPhase !== 'setup') {
-        switchPhase('setup');
-        renderTeamInputs();
-      }
-    }
-  }, (err) => {
-    console.error('Listener error:', err);
-    showToast('Connection lost: ' + err.message);
-  });
-}
-
-// ========================================
-// SETUP
-// ========================================
-function renderTeamInputs() {
-  const n = parseInt(document.getElementById('num-teams').value);
-  const container = document.getElementById('team-name-inputs');
-  let html = '';
-  for (let i = 0; i < n; i++) {
-    const val = room.teams[i] || 'Team ' + (i + 1);
-    html += `<div class="form-row">
-      <label>Team ${i + 1}</label>
-      <input type="text" class="team-name-input" value="${val}" placeholder="Team ${i + 1} name">
-    </div>`;
-  }
-  container.innerHTML = html;
-}
-
-function getTeamNames() {
-  return Array.from(document.querySelectorAll('.team-name-input'))
-    .map(input => input.value.trim()).filter(Boolean);
-}
-
-window.generateDraftOrder = function() {
-  const teams = getTeamNames();
-  if (teams.length < 2) { showToast('Need at least 2 teams'); return; }
-
-  const order = [...teams];
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-
-  room.teams = teams;
-  room.draftOrder = order;
-
-  document.getElementById('draft-order-display').innerHTML = order.map((t, i) =>
-    `<div class="draft-order-card">
-      <div class="pick-num">Pick ${i + 1}</div>
-      <div class="team-name">${t}</div>
-    </div>`
-  ).join('');
-  document.getElementById('draft-order-card').style.display = 'block';
-
-  roomUpdate({
-    teams: teams,
-    draftOrder: order,
-    'config/picksPerTeam': parseInt(document.getElementById('picks-per-team').value),
-    'config/scoringType': document.getElementById('scoring-type').value,
-    'config/cutRule': document.getElementById('cut-rule').value,
-    'config/numTeams': teams.length
-  });
-};
-
-window.startDraft = function() {
-  const teams = getTeamNames();
-  if (room.draftOrder.length === 0) { showToast('Randomize draft order first'); return; }
-
-  roomUpdate({
-    phase: 'draft',
-    teams: teams,
-    draftOrder: room.draftOrder,
-    'config/picksPerTeam': parseInt(document.getElementById('picks-per-team').value),
-    'config/scoringType': document.getElementById('scoring-type').value,
-    'config/cutRule': document.getElementById('cut-rule').value,
-    picks: null,
-    drafted: null,
-    currentPick: 0,
-    draftComplete: false
-  });
-};
-
-// ========================================
-// LOBBY
-// ========================================
-function renderLobby() {
-  document.getElementById('lobby-room-code').textContent = roomCode;
-  const container = document.getElementById('lobby-players');
-  const players = Object.keys(room.players || {});
-  container.innerHTML = players.map(p =>
-    `<div class="player-chip ${p === myName ? 'me' : ''}">
-      <span class="online-dot"></span>${p}${p === room.commissioner ? ' (host)' : ''}
-    </div>`
-  ).join('');
-}
-
-// ========================================
-// DRAFT
-// ========================================
-function renderDraft() {
-  renderDraftBoard();
-  renderPlayerGrid();
-  updatePickBanner();
-
-  const snake = getSnakeOrder();
-  const isMyTurn = (room.currentPick < snake.length && snake[room.currentPick].team === myName);
-  const isDraftDone = room.currentPick >= room.totalPicks;
-
-  const pickCard = document.getElementById('pick-card');
-  const selectHeading = pickCard.querySelector('h2');
-  const searchBox = pickCard.querySelector('.search-box');
-
-  if (isDraftDone) {
-    pickCard.querySelector('.player-grid').innerHTML = '';
-    if (searchBox) searchBox.style.display = 'none';
-    if (selectHeading) selectHeading.textContent = 'Draft Complete!';
-  } else if (!isMyTurn) {
-    const currentTeam = snake[room.currentPick]?.team || '...';
-    pickCard.querySelector('.player-grid').innerHTML =
-      `<div class="waiting-msg">Waiting for <strong>${currentTeam}</strong> to pick...</div>`;
-    if (searchBox) searchBox.style.display = 'none';
-    if (selectHeading) selectHeading.textContent = 'Waiting...';
-  } else {
-    if (searchBox) searchBox.style.display = 'block';
-    if (selectHeading) selectHeading.textContent = 'Select a Golfer';
-  }
-
-  const canUndo = room.currentPick > 0 && isCommissioner;
-  document.getElementById('undo-btn').style.display = canUndo ? 'inline-block' : 'none';
-}
-
-function updatePickBanner() {
-  const snake = getSnakeOrder();
-  const banner = document.getElementById('pick-banner');
-
-  if (room.currentPick >= snake.length) {
-    document.getElementById('current-team-name').textContent = 'Draft Complete!';
-    document.getElementById('current-pick-info').textContent = '';
-    banner.querySelector('.label').textContent = '';
-    banner.classList.remove('my-turn');
-    return;
-  }
-
-  const curr = snake[room.currentPick];
-  document.getElementById('current-team-name').textContent = curr.team;
-  document.getElementById('current-pick-info').textContent =
-    `Round ${curr.round}, Pick ${room.currentPick + 1} of ${snake.length}`;
-
-  const isMyTurn = curr.team === myName;
-  banner.classList.toggle('my-turn', isMyTurn);
-  banner.querySelector('.label').textContent = isMyTurn ? 'Your Pick!' : 'Now Picking';
-}
-
-function renderDraftBoard() {
-  const snake = getSnakeOrder();
-  const table = document.getElementById('draft-board');
-  let html = '<thead><tr><th></th>';
-  room.draftOrder.forEach(t => html += `<th>${t}</th>`);
-  html += '</tr></thead><tbody>';
-
-  for (let r = 0; r < room.picksPerTeam; r++) {
-    html += `<tr><td class="round-label">Rd ${r + 1}</td>`;
-    room.draftOrder.forEach(team => {
-      const pickIdx = snake.findIndex(s => s.round === r + 1 && s.team === team);
-      const isCurrent = pickIdx === room.currentPick;
-      const teamPicks = room.picks[team] || [];
-      const player = teamPicks[r] || null;
-      html += `<td class="${isCurrent ? 'current-pick' : ''} ${player ? 'picked' : ''}">`;
-      html += player || (isCurrent ? '&#11013;' : '&mdash;');
-      html += '</td>';
-    });
-    html += '</tr>';
-  }
-  html += '</tbody>';
-  table.innerHTML = html;
-}
-
-function renderPlayerGrid() {
-  const grid = document.getElementById('player-grid');
-  const search = (document.getElementById('player-search')?.value || '').toLowerCase();
-  const draftedSet = new Set(room.drafted || []);
-
-  const snake = getSnakeOrder();
-  const isMyTurn = (room.currentPick < snake.length && snake[room.currentPick].team === myName);
-  const isDraftDone = room.currentPick >= room.totalPicks;
-
-  if (isDraftDone || !isMyTurn) {
-    return;
-  }
-
-  grid.innerHTML = PGA_FIELD
-    .filter(p => p.name.toLowerCase().includes(search))
-    .map(p => {
-      const isDrafted = draftedSet.has(p.name);
-      const escapedName = p.name.replace(/'/g, "\\'");
-      return `<div class="player-card ${isDrafted ? 'drafted' : ''}"
-        onclick="${isDrafted ? '' : `window.selectPlayer('${escapedName}')`}">
-        <span class="player-name">${p.name}</span>
-        <span class="player-rank">#${p.rank}</span>
-      </div>`;
-    }).join('');
-}
-
-// ========================================
-// PICK LOGIC
-// ========================================
-window.selectPlayer = function(name) {
-  const draftedSet = new Set(room.drafted || []);
-  if (draftedSet.has(name)) return;
-  const snake = getSnakeOrder();
-  if (room.currentPick >= snake.length) return;
-
-  pendingPlayer = name;
-  const curr = snake[room.currentPick];
-  document.getElementById('confirm-player-name').textContent = name;
-  document.getElementById('confirm-team-label').textContent = `for ${curr.team}`;
-  document.getElementById('confirm-modal').classList.add('show');
-};
-
-window.confirmPick = function() {
-  if (!pendingPlayer) return;
-  const player = pendingPlayer;
-  closeModal();
-
-  const snake = getSnakeOrder();
-  const curr = snake[room.currentPick];
-
-  if (!room.picks[curr.team]) room.picks[curr.team] = [];
-  room.picks[curr.team].push(player);
-  if (!Array.isArray(room.drafted)) room.drafted = [];
-  room.drafted.push(player);
-  room.currentPick++;
-
-  const isDone = room.currentPick >= room.totalPicks;
-  if (isDone) room.draftComplete = true;
-
-  renderDraft();
-  showToast(`${curr.team} selects ${player}`);
-
-  const updates = {
-    picks: picksMapToObj(room.picks),
-    drafted: draftedToObj(room.drafted),
-    currentPick: room.currentPick,
-    draftComplete: room.draftComplete
-  };
-  if (isDone) updates.phase = 'scores';
-  roomUpdate(updates);
-
-  if (isDone) {
-    setTimeout(() => {
-      showToast('Draft Complete!');
-      setTimeout(() => { switchPhase('scores'); renderScores(); }, 1500);
-    }, 500);
-  }
-
-  pendingPlayer = null;
-};
-
-window.closeModal = function() {
-  document.getElementById('confirm-modal').classList.remove('show');
-  pendingPlayer = null;
-};
-
-window.undoPick = function() {
-  if (room.currentPick <= 0) return;
-  room.currentPick--;
-  const snake = getSnakeOrder();
-  const prev = snake[room.currentPick];
-  const teamPicks = room.picks[prev.team] || [];
-  const removed = teamPicks.pop();
-  room.drafted = (room.drafted || []).filter(n => n !== removed);
-  room.draftComplete = false;
-
-  renderDraft();
-
-  roomUpdate({
-    picks: picksMapToObj(room.picks),
-    drafted: draftedToObj(room.drafted),
-    currentPick: room.currentPick,
-    draftComplete: false,
-    phase: 'draft'
-  });
-};
-
-// ========================================
-// EDIT ROSTERS (Commissioner only)
-// ========================================
-let swapTeam = null;
-let swapIndex = null;
-
-window.showEditRosters = function() {
-  const content = document.getElementById('edit-rosters-content');
-  let html = '';
-  room.draftOrder.forEach(team => {
-    const players = room.picks[team] || [];
-    html += `<div style="margin-bottom:16px;">
-      <div style="font-weight:bold; color:var(--pga-navy); margin-bottom:8px; font-size:1.05rem;">${team}</div>`;
-    players.forEach((player, i) => {
-      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #eee;">
-        <span>${player}</span>
-        <button class="btn btn-outline btn-sm" style="padding:3px 10px; font-size:0.75rem;" onclick="window.startSwap('${team.replace(/'/g, "\\'")}', ${i})">Swap</button>
-      </div>`;
-    });
-    html += '</div>';
-  });
-  content.innerHTML = html;
-  document.getElementById('edit-rosters-modal').classList.add('show');
-};
-
-window.closeEditRosters = function() {
-  document.getElementById('edit-rosters-modal').classList.remove('show');
-};
-
-window.startSwap = function(team, index) {
-  swapTeam = team;
-  swapIndex = index;
-  const currentPlayer = (room.picks[team] || [])[index];
-  document.getElementById('swap-info').textContent = `Replacing ${currentPlayer} on ${team}`;
-  document.getElementById('swap-search').value = '';
-  window.renderSwapGrid();
-  document.getElementById('edit-rosters-modal').classList.remove('show');
-  document.getElementById('swap-modal').classList.add('show');
-};
-
-window.renderSwapGrid = function() {
-  const search = (document.getElementById('swap-search')?.value || '').toLowerCase();
-  const draftedSet = new Set(room.drafted || []);
-  const grid = document.getElementById('swap-grid');
-
-  grid.innerHTML = PGA_FIELD
-    .filter(p => p.name.toLowerCase().includes(search))
-    .map(p => {
-      const isDrafted = draftedSet.has(p.name);
-      const escapedName = p.name.replace(/'/g, "\\'");
-      return `<div class="player-card ${isDrafted ? 'drafted' : ''}"
-        onclick="${isDrafted ? '' : `window.confirmSwap('${escapedName}')`}">
-        <span class="player-name">${p.name}</span>
-        <span class="player-rank">#${p.rank}</span>
-      </div>`;
-    }).join('');
-};
-
-window.confirmSwap = function(newPlayer) {
-  if (swapTeam === null || swapIndex === null) return;
-
-  const oldPlayer = (room.picks[swapTeam] || [])[swapIndex];
-
-  room.picks[swapTeam][swapIndex] = newPlayer;
-  room.drafted = (room.drafted || []).filter(n => n !== oldPlayer);
-  room.drafted.push(newPlayer);
-
-  roomUpdate({
-    picks: picksMapToObj(room.picks),
-    drafted: draftedToObj(room.drafted)
-  });
-
-  showToast(`Swapped ${oldPlayer} for ${newPlayer} on ${swapTeam}`);
-  window.closeSwapModal();
-  renderScores();
-};
-
-window.closeSwapModal = function() {
-  document.getElementById('swap-modal').classList.remove('show');
-  swapTeam = null;
-  swapIndex = null;
-};
+const TEAM_ORDER = Object.keys(TEAMS);
+const SCORING_TYPE = 'all';   // all golfers count
+const CUT_RULE = 'freeze';    // project weekend rounds for missed-cut players
 
 // ========================================
 // SCORES
@@ -1436,15 +113,16 @@ async function fetchScores() {
   try {
     const resp = await fetch('https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard');
     const data = await resp.json();
-    let pgaEvent = null;
+    let openEvent = null;
     if (data.events) {
-      pgaEvent = data.events.find(e => e.name && e.name.toLowerCase().includes('pga championship'))
-              || data.events.find(e => e.shortName && e.shortName.toLowerCase().includes('pga'))
-              || data.events[0];
+      openEvent = data.events.find(e => /open championship/i.test(e.name || ''))
+               || data.events.find(e => /the\s+\d+\w*\s+open/i.test(e.name || ''))
+               || data.events.find(e => /\bthe open\b/i.test(e.name || '') || /\bthe open\b/i.test(e.shortName || ''))
+               || data.events[0];
     }
-    if (!pgaEvent?.competitions?.[0]) { usePlaceholderScores(); return; }
+    if (!openEvent?.competitions?.[0]) { showToast('No live tournament data yet.'); return; }
 
-    const comp = pgaEvent.competitions[0];
+    const comp = openEvent.competitions[0];
     document.getElementById('tournament-status').textContent = comp.status?.type?.description || 'Unknown';
 
     scoreData = {};
@@ -1483,56 +161,17 @@ async function fetchScores() {
       };
     });
 
-    // Expose full score data for compare view
-    window._lastScoreData = scoreData;
-    window._lastScoreUpdate = Date.now();
-
     document.getElementById('last-update').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
     renderScores();
-    // If compare view is active, refresh both panes with new scores
-    if (currentPhase === 'compare' && compareCodes.length === 2) {
-      compareCodes.forEach((code, idx) => {
-        const pane = document.getElementById('compare-pane-' + (idx + 1));
-        if (pane && pane._lastData) renderComparePane(pane, code, pane._lastData);
-      });
-      const upd = document.getElementById('compare-last-update');
-      if (upd) upd.textContent = 'Live · updated ' + new Date().toLocaleTimeString();
-    }
-    if (currentPhase === 'scores') showToast('Scores updated!');
   } catch (err) {
     console.error(err);
-    showToast('Could not fetch live scores. Using demo data.');
-    usePlaceholderScores();
+    showToast('Could not fetch live scores.');
   }
 }
 
 function parseToPar(str) {
   if (!str || str === 'E') return 0;
   return parseInt(str) || 0;
-}
-
-function usePlaceholderScores() {
-  scoreData = {};
-  PGA_FIELD.forEach(p => {
-    const toPar = Math.floor(Math.random() * 25) - 8;
-    const r1 = Math.floor(Math.random() * 10) + 66;
-    const r2 = Math.floor(Math.random() * 10) + 66;
-    const r3 = Math.random() > 0.3 ? Math.floor(Math.random() * 10) + 66 : null;
-    const r4 = r3 && Math.random() > 0.4 ? Math.floor(Math.random() * 10) + 66 : null;
-    const rounds = [String(r1), String(r2)];
-    if (r3) rounds.push(String(r3));
-    if (r4) rounds.push(String(r4));
-    scoreData[p.name] = {
-      name: p.name, toPar,
-      toParDisplay: toPar === 0 ? 'E' : (toPar > 0 ? '+' + toPar : '' + toPar),
-      position: '--', thru: 'F', today: rounds[rounds.length - 1],
-      rounds: rounds,
-      status: Math.random() > 0.85 ? 'cut' : 'active'
-    };
-  });
-  document.getElementById('tournament-status').textContent = 'Demo Mode';
-  document.getElementById('last-update').textContent = `Last updated: ${new Date().toLocaleTimeString()} (demo)`;
-  renderScores();
 }
 
 function stripAccents(str) {
@@ -1567,8 +206,8 @@ function findPlayerTeam(playerName) {
   const parts = playerName.split(' ');
   const pFirst = stripAccents(parts[0] || '').toLowerCase();
   const pLast = stripAccents(parts[parts.length - 1] || '').toLowerCase();
-  for (const team of room.draftOrder) {
-    for (const drafted of (room.picks[team] || [])) {
+  for (const team of TEAM_ORDER) {
+    for (const drafted of TEAMS[team]) {
       if (!drafted) continue;
       if (drafted === playerName) return team;
       if (stripAccents(drafted).toLowerCase() === norm) return team;
@@ -1587,8 +226,12 @@ function parseRoundToPar(val) {
   return parseInt(val) || null;
 }
 
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function renderScores() {
-  if (Object.keys(scoreData).length === 0) { fetchScores(); return; }
+  if (Object.keys(scoreData).length === 0) { return; }
 
   function calcFieldRoundAvg(roundIdx) {
     const vals = Object.values(scoreData)
@@ -1601,10 +244,10 @@ function renderScores() {
   const fieldAvgR3 = calcFieldRoundAvg(2);
   const fieldAvgR4 = calcFieldRoundAvg(3);
 
-  const teamScores = room.draftOrder.map(team => {
-    const players = (room.picks[team] || []).map(name => ({ ...findPlayerScore(name), name }));
+  const teamScores = TEAM_ORDER.map(team => {
+    const players = TEAMS[team].map(name => ({ ...findPlayerScore(name), name }));
 
-    if (room.cutRule === 'freeze') {
+    if (CUT_RULE === 'freeze') {
       players.forEach(p => {
         if (p.status === 'cut') {
           const rounds = p.rounds || [];
@@ -1636,8 +279,8 @@ function renderScores() {
 
     players.sort((a, b) => a.toPar - b.toPar);
     let counting;
-    if (room.scoringType === 'best4') counting = players.slice(0, 4);
-    else if (room.scoringType === 'best3') counting = players.slice(0, 3);
+    if (SCORING_TYPE === 'best4') counting = players.slice(0, 4);
+    else if (SCORING_TYPE === 'best3') counting = players.slice(0, 3);
     else counting = players;
     const totalToPar = counting.reduce((s, p) => s + p.toPar, 0);
     return {
@@ -1734,6 +377,14 @@ function renderScores() {
   });
 
   html += '</tbody></table></div></div>';
+
+  // Footer note if any cut-frozen projections shown
+  const anyCutAdjusted = teamScores.some(ts => ts.players.some(p => p.cutAdjusted));
+  if (anyCutAdjusted) {
+    html = html.replace('</tbody></table></div></div>',
+      '</tbody></table></div><div style="font-size:0.7rem; color:var(--text-light); font-style:italic; margin-top:8px; text-align:center;">* projected weekend rounds for missed-cut players</div></div>');
+  }
+
   document.getElementById('team-leaderboard').innerHTML = html;
 
   const allPlayers = Object.values(scoreData).sort((a, b) => a.toPar - b.toPar);
@@ -1741,22 +392,13 @@ function renderScores() {
   allPlayers.forEach((p, i) => {
     const team = findPlayerTeam(p.name);
     const sc = p.toPar < 0 ? 'under' : (p.toPar > 0 ? 'over' : 'even');
-    lbHTML += `<tr><td>${p.position !== '--' ? p.position : i + 1}</td>
+    lbHTML += `<tr${team ? ' style="background:#e8eef7;"' : ''}><td>${p.position !== '--' ? p.position : i + 1}</td>
       <td>${p.name}</td><td><span class="score ${sc}">${p.toParDisplay}</span></td>
-      <td>${p.thru}</td><td>${p.today}</td><td>${team || '--'}</td></tr>`;
+      <td>${p.thru}</td><td>${p.today}</td><td>${team ? '<strong>' + team + '</strong>' : '--'}</td></tr>`;
   });
   lbHTML += '</tbody>';
   document.getElementById('full-leaderboard').innerHTML = lbHTML;
 }
-
-window.toggleTeamDetail = function(id) {
-  document.getElementById(id).classList.toggle('open');
-};
-
-window.toggleTeamCard = function(id) {
-  const el = document.getElementById(id);
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-};
 
 window.toggleTeamExpand = function(cls, row, teamName) {
   const rows = document.querySelectorAll('.' + cls);
@@ -1774,41 +416,6 @@ window.toggleTeamExpand = function(cls, row, teamName) {
   }
 };
 
-let scoreInterval = null;
-function startScoreRefresh() {
-  if (scoreInterval) clearInterval(scoreInterval);
-  fetchScores();
-  scoreInterval = setInterval(fetchScores, 60000);
-}
-
-// ========================================
-// PHASE SWITCHING
-// ========================================
-function switchPhase(phase) {
-  currentPhase = phase;
-  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
-  document.getElementById(`phase-${phase}`).classList.add('active');
-
-  const tabs = document.getElementById('phase-tabs');
-  if (phase !== 'landing' && phase !== 'lobby' && phase !== 'compare') {
-    tabs.style.display = 'flex';
-    tabs.querySelectorAll('.phase-tab').forEach(t => {
-      t.classList.toggle('active', t.dataset.phase === phase);
-    });
-  } else {
-    tabs.style.display = 'none';
-  }
-
-  if (phase === 'scores') {
-    startScoreRefresh();
-    const editBtn = document.getElementById('edit-rosters-btn');
-    if (editBtn) editBtn.style.display = isCommissioner ? 'inline-block' : 'none';
-  }
-}
-
-// ========================================
-// UTILS
-// ========================================
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -1816,44 +423,8 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-function showRoomBadge() {
-  document.getElementById('room-badge').style.display = 'block';
-  document.getElementById('room-code-display').textContent = roomCode;
-}
-
-window.copyRoomCode = function() {
-  navigator.clipboard.writeText(roomCode).then(() => showToast('Room code copied!'));
-};
-
-window.renderTeamInputs = renderTeamInputs;
-window.renderPlayerGrid = renderPlayerGrid;
-
-// ========================================
-// URL PARAMS — auto-join via ?room=ABCD
-// ========================================
-function checkURLParams() {
-  const params = new URLSearchParams(window.location.search);
-  const roomParam = params.get('room');
-  const compareParam = params.get('compare');
-  if (compareParam) {
-    const codes = compareParam.toUpperCase().split(',').map(c => c.trim()).filter(c => c.length >= 4);
-    if (codes.length >= 2) {
-      document.getElementById('cmp-code-1').value = codes[0];
-      document.getElementById('cmp-code-2').value = codes[1];
-      compareCodes = [codes[0], codes[1]];
-      switchPhase('compare');
-      loadCompareRooms();
-      startScoreRefresh();
-      return;
-    }
-  }
-  if (roomParam) {
-    document.getElementById('join-code').value = roomParam.toUpperCase();
-    showJoin();
-  }
-}
-
-checkURLParams();
+fetchScores();
+setInterval(fetchScores, 60000);
 </script>
 </body>
 </html>
